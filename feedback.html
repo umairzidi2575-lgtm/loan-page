@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhani Finance – Feedback</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+
+body{
+  background:#f4f6fb;
+  color:#111827;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+
+/* ===== TOP HEADER ===== */
+.top-header{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  padding:14px 20px;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  border-bottom-left-radius:16px;
+  border-bottom-right-radius:16px;
+}
+.top-header h2{font-size:16px;font-weight:600;}
+.top-header p{font-size:12px;color:#6b7280;margin-top:4px}
+
+/* ===== MAIN CONTAINER ===== */
+.container{
+  max-width:480px;
+  margin:auto;
+  padding:14px;
+  padding-top:120px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  transition:0.3s;
+}
+.card:hover{
+  box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+.card h3{font-size:15px;margin-bottom:12px;font-weight:600;}
+
+/* INPUT */
+input, textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  margin-bottom:14px;
+  font-size:14px;
+  font-family:Inter,sans-serif;
+  outline:none;
+  transition:0.3s;
+}
+input:focus, textarea:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 6px rgba(37,99,235,.3);
+}
+
+/* BUTTON */
+button{
+  background:#2563eb;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+  width:100%;
+}
+button:hover{
+  background:#1e40af;
+}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  height:70px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top-left-radius:18px;
+  border-top-right-radius:18px;
+}
+.nav-item{
+  text-align:center;
+  font-size:22px;
+  color:#6b7280;
+  cursor:pointer;
+  transition:0.3s;
+}
+.nav-item span{
+  font-size:11px;
+  display:block;
+}
+.nav-item.active{
+  color:#2563eb;
+}
+.nav-item:hover{
+  color:#3b82f6;
+  transform:scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <h2 id="userName">Welcome</h2>
+  <p>Share your feedback with us</p>
+</div>
+
+<div class="container">
+
+<div class="card">
+  <h3>Feedback Form</h3>
+  <input type="text" id="name" placeholder="Your Name">
+  <input type="email" id="email" placeholder="Your Email">
+  <textarea id="feedback" placeholder="Your Feedback" rows="5"></textarea>
+  <button onclick="submitFeedback()">Submit Feedback</button>
+</div>
+
+</div>
+
+<!-- BOTTOM NAV (mCoins added, feedback removed) -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="go('dashboard.html')">🏠<span>Home</span></div>
+  <div class="nav-item" onclick="go('loanapplication.html')">📄<span>Loans</span></div>
+  <div class="nav-item" onclick="go('loanbalance.html')">💰<span>mCoins</span></div>
+  <div class="nav-item" onclick="go('profile.html')">👤<span>Profile</span></div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyB-ipqoUdwFYKvSKdBXe0ivw8Ph47IyjfE",
+  authDomain:"incoinpaysliveearning.firebaseapp.com",
+  databaseURL:"https://incoinpaysliveearning-default-rtdb.firebaseio.com",
+  projectId:"incoinpaysliveearning"
+});
+const db=firebase.database();
+
+// LOGIN CHECK
+const aadhaar=localStorage.getItem("loan_aadhaar");
+if(!aadhaar) location.href="index.html";
+
+// LOAD USER NAME
+db.ref("loanUsers/"+aadhaar).once("value").then(snap=>{
+  if(!snap.exists()) return;
+  const u=snap.val();
+  document.getElementById("userName").innerText="Welcome, "+(u.name||"User");
+});
+
+// NAVIGATION FUNCTION
+function go(page){ location.href=page; }
+
+// FEEDBACK SUBMIT
+function submitFeedback(){
+  const name=document.getElementById("name").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const feedback=document.getElementById("feedback").value.trim();
+
+  if(!name || !email || !feedback){
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const feedbackRef=db.ref("feedback").push();
+  feedbackRef.set({
+    userAadhaar:aadhaar,
+    name:name,
+    email:email,
+    feedback:feedback,
+    timestamp:new Date().toISOString()
+  }).then(()=>{
+    alert("Thank you for your feedback!");
+    document.getElementById("name").value="";
+    document.getElementById("email").value="";
+    document.getElementById("feedback").value="";
+  }).catch(err=>{
+    alert("Error: "+err.message);
+  });
+}
+</script>
+
+</body>
+</html>

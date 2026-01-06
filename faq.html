@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhani Finance – FAQ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+
+body{
+  background:#f4f6fb;
+  color:#111827;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+
+/* TOP HEADER */
+.top-header{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  padding:14px;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  border-bottom-left-radius:16px;
+  border-bottom-right-radius:16px;
+}
+.top-header h2{font-size:16px;}
+.top-header p{font-size:12px;color:#6b7280;margin-top:4px}
+
+/* MAIN CONTAINER */
+.container{
+  max-width:480px;
+  margin:auto;
+  padding:12px 14px;
+  padding-top:110px;
+}
+
+/* FAQ CARD */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+  cursor:pointer;
+}
+.card h3{
+  font-size:15px;
+  color:#1e3a8a;
+}
+.card p{
+  font-size:14px;
+  color:#374151;
+  margin-top:6px;
+  display:none;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  height:70px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 -4px 15px rgba(0,0,0,.2);
+  border-top-left-radius:18px;
+  border-top-right-radius:18px;
+}
+.nav-item{
+  text-align:center;
+  font-size:22px;
+  color:#bfdbfe;
+  cursor:pointer;
+}
+.nav-item span{
+  font-size:11px;
+  display:block;
+}
+.nav-item.active{
+  color:#ffffff;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <h2>FAQ</h2>
+  <p>Frequently Asked Questions</p>
+</div>
+
+<div class="container" id="faqContainer">
+
+<!-- FAQ ITEMS -->
+<div class="card">
+  <h3>How do I apply for a loan?</h3>
+  <p>Go to the Loans section, fill in your KYC details, select the loan amount and submit. Our team will verify and approve it.</p>
+</div>
+
+<div class="card">
+  <h3>How do I check my EMI due date?</h3>
+  <p>Your next EMI due date is displayed on the Dashboard under the Next EMI section.</p>
+</div>
+
+<div class="card">
+  <h3>How do I update my bank account?</h3>
+  <p>Go to Add Bank section in the dashboard and enter your new bank details. Make sure the account is Aadhaar-linked.</p>
+</div>
+
+<div class="card">
+  <h3>What if my loan payment fails?</h3>
+  <p>If a payment fails, the admin will notify you. You can re-upload the correct transaction screenshot to complete payment.</p>
+</div>
+
+<div class="card">
+  <h3>How do I contact support?</h3>
+  <p>Go to the Support section in More tab or email us at support@dhanifinance.com</p>
+</div>
+
+</div>
+
+<!-- 🔥 MOBILE BOTTOM NAV UPGRADE -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="go('dashboard.html')" id="navHome">
+    <div class="nav-circle"><span>🏠</span></div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="go('loanapplication.html')" id="navLoans">
+    <div class="nav-circle"><span>📄</span></div>
+    <span>Loans</span>
+  </div>
+  <div class="nav-item" onclick="go('loanbalance.html')" id="navCoins">
+    <div class="nav-circle"><span>💰</span></div>
+    <span>Coins</span>
+  </div>
+  <div class="nav-item" onclick="go('profile.html')" id="navProfile">
+    <div class="nav-circle"><span>👤</span></div>
+    <span>Profile</span>
+  </div>
+</div>
+
+<style>
+/* ===== UPGRADED BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;
+  bottom:0; 
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:100;
+  background:#fff; 
+  padding:10px 0;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  box-shadow:0 -4px 15px rgba(0,0,0,0.1);
+}
+
+.nav-item{
+  text-align:center;
+  cursor:pointer;
+  transition:0.3s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:70px;
+}
+
+.nav-item span{
+  font-size:12px;
+  display:block;
+  color:#6b7280;
+  margin-top:4px;
+  font-weight:500;
+}
+
+.nav-circle{
+  width:50px;
+  height:50px;
+  background:#f3f4f6;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  color:#2563eb;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  transition:0.3s;
+}
+
+.nav-item.active .nav-circle{
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+  color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 6px 16px rgba(0,0,0,0.2);
+}
+
+.nav-circle:hover{
+  transform:scale(1.1);
+  box-shadow:0 6px 14px rgba(0,0,0,.2);
+}
+
+/* MOBILE RESPONSIVE */
+@media screen and (max-width:400px){
+  .nav-item{width:60px;}
+  .nav-item span{font-size:11px;}
+  .nav-circle{width:45px;height:45px;font-size:20px;}
+}
+</style>
+
+<script>
+// ===== HIGHLIGHT ACTIVE NAV =====
+const currentPage = window.location.pathname.split("/").pop();
+document.querySelectorAll(".nav-item").forEach(item=>{
+  item.classList.remove("active");
+});
+switch(currentPage){
+  case "dashboard.html": document.getElementById("navHome").classList.add("active"); break;
+  case "loanapplication.html": document.getElementById("navLoans").classList.add("active"); break;
+  case "loanbalance.html": document.getElementById("navCoins").classList.add("active"); break;
+  case "profile.html": document.getElementById("navProfile").classList.add("active"); break;
+}
+</script>
+<script>
+function go(page){ location.href=page; }
+
+// FAQ toggle
+const cards = document.querySelectorAll('.card');
+cards.forEach(card=>{
+  card.addEventListener('click',()=>{
+    const p = card.querySelector('p');
+    if(p.style.display==='none'){
+      p.style.display='block';
+    } else {
+      p.style.display='none';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

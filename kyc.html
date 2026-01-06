@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KYC – Dhani Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{
+  background:#f4f6fb;
+  color:#111827;
+  min-height:100vh;
+  padding:12px;
+}
+
+/* CONTAINER */
+.container{
+  max-width:480px;
+  margin:auto;
+  width:100%;
+  padding-bottom:30px;
+}
+
+/* HEADER CARD */
+.header-card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  text-align:center;
+}
+.header-card h2{font-size:20px;margin-bottom:6px;}
+.header-card p{font-size:14px;color:#6b7280;}
+
+/* DOC CARD */
+.doc-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition: transform .2s, box-shadow .2s;
+}
+.doc-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+.doc-icon{
+  font-size:30px;
+  color:#2563eb;
+  min-width:40px;
+}
+.doc-info{
+  flex:1;
+}
+.doc-info label{
+  font-size:14px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+.doc-info input[type="file"]{
+  display:none;
+}
+.upload-btn{
+  background: linear-gradient(135deg,#c0c0c0,#e0e0e0);
+  border:none;
+  border-radius:10px;
+  padding:8px 12px;
+  font-weight:600;
+  color:#111827;
+  cursor:pointer;
+  transition: transform .2s, background .2s;
+}
+.upload-btn:hover{
+  transform:scale(1.05);
+  background: linear-gradient(135deg,#b0b0b0,#d0d0d0);
+}
+
+/* IMAGE PREVIEW */
+img.preview{
+  width:80px;
+  height:80px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+  margin-left:12px;
+}
+
+/* PROGRESS BAR */
+.progress-container{
+  width:100%;
+  height:8px;
+  background:#e5e7eb;
+  border-radius:6px;
+  margin-top:6px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background: linear-gradient(270deg,#2563eb,#3b82f6,#2563eb);
+  background-size: 600% 100%;
+  border-radius:6px;
+  transition: width 0.5s ease;
+  animation: gradientFlow 3s ease infinite;
+}
+@keyframes gradientFlow {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* SUBMIT BUTTON */
+#submitBtn{
+  width:100%;
+  padding:14px;
+  background: linear-gradient(135deg,#2563eb,#3b82f6);
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  transition: transform .2s, box-shadow .2s;
+}
+#submitBtn:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* STATUS */
+#status{
+  text-align:center;
+  margin-top:12px;
+  font-size:14px;
+  color:#2563eb;
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:480px){
+  .doc-card{flex-direction:column; align-items:flex-start;}
+  img.preview{margin-left:0; margin-top:8px;}
+}
+</style>
+</head>
+<body>
+
+<!-- rest of your dashboard HTML -->
+
+<div class="container">
+
+<div class="header-card">
+  <h2>KYC Verification</h2>
+  <p>Upload your documents to complete KYC</p>
+</div>
+
+<!-- Aadhaar Card -->
+<div class="doc-card">
+  <div class="doc-icon">🆔</div>
+  <div class="doc-info">
+    <label for="aadhaarFile">Aadhaar Card</label>
+    <input type="file" id="aadhaarFile" accept="image/*">
+    <button class="upload-btn" onclick="document.getElementById('aadhaarFile').click()">Choose File</button>
+  </div>
+  <img id="aadhaarPreview" class="preview" style="display:none;">
+</div>
+
+<!-- PAN Card -->
+<div class="doc-card">
+  <div class="doc-icon">💳</div>
+  <div class="doc-info">
+    <label for="panFile">PAN Card</label>
+    <input type="file" id="panFile" accept="image/*">
+    <button class="upload-btn" onclick="document.getElementById('panFile').click()">Choose File</button>
+  </div>
+  <img id="panPreview" class="preview" style="display:none;">
+</div>
+
+<!-- Selfie -->
+<div class="doc-card">
+  <div class="doc-icon">🤳</div>
+  <div class="doc-info">
+    <label for="selfieFile">Selfie</label>
+    <input type="file" id="selfieFile" accept="image/*" capture="user">
+    <button class="upload-btn" onclick="document.getElementById('selfieFile').click()">Take Selfie</button>
+  </div>
+  <img id="selfiePreview" class="preview" style="display:none;">
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-container">
+  <div class="progress-bar" id="uploadProgress"></div>
+</div>
+
+<!-- Submit -->
+<button id="submitBtn">Submit KYC</button>
+<div id="status"></div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script>
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyCsIYVX3OawpDlFZpKU3KpRsfM7QQoyWyY",
+    authDomain: "onlineservice-9f153.firebaseapp.com",
+    databaseURL: "https://onlineservice-9f153-default-rtdb.firebaseio.com",
+    projectId: "onlineservice-9f153",
+    storageBucket: "onlineservice-9f153.appspot.com",
+    messagingSenderId: "1040271430967",
+    appId: "1:1040271430967:web:6325b056257454943d36b2"
+  };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const storage = firebase.storage();
+
+// File inputs and previews
+const aadhaarInput = document.getElementById('aadhaarFile');
+const panInput = document.getElementById('panFile');
+const selfieInput = document.getElementById('selfieFile');
+
+const aadhaarPreview = document.getElementById('aadhaarPreview');
+const panPreview = document.getElementById('panPreview');
+const selfiePreview = document.getElementById('selfiePreview');
+
+function previewImage(file, imgElem){
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => { imgElem.src = e.target.result; imgElem.style.display='block'; }
+    reader.readAsDataURL(file);
+  }
+}
+aadhaarInput.onchange = e => previewImage(e.target.files[0], aadhaarPreview);
+panInput.onchange = e => previewImage(e.target.files[0], panPreview);
+selfieInput.onchange = e => previewImage(e.target.files[0], selfiePreview);
+
+// Submit KYC
+document.getElementById('submitBtn').onclick = async () => {
+  const status = document.getElementById('status');
+  const progress = document.getElementById('uploadProgress');
+  const aadhaarFile = aadhaarInput.files[0];
+  const panFile = panInput.files[0];
+  const selfieFile = selfieInput.files[0];
+
+  if(!aadhaarFile || !panFile || !selfieFile){
+    alert("Please select all files.");
+    return;
+  }
+
+  const aadhaar = localStorage.getItem("loan_aadhaar");
+  if(!aadhaar){ window.location.href="index.html"; return; }
+
+  status.innerText = "Uploading files...";
+  progress.style.width = "0%";
+
+  try{
+    const uploadFile = async (file, path) => {
+      const ref = storage.ref(path);
+      await ref.put(file);
+      return ref.getDownloadURL();
+    }
+
+    const aadhaarURL = await uploadFile(aadhaarFile, `kyc/${aadhaar}/aadhaar.jpg`);
+    progress.style.width = "33%";
+    const panURL = await uploadFile(panFile, `kyc/${aadhaar}/pan.jpg`);
+    progress.style.width = "66%";
+    const selfieURL = await uploadFile(selfieFile, `kyc/${aadhaar}/selfie.jpg`);
+    progress.style.width = "100%";
+
+    await db.ref(`loanUsers/${aadhaar}/kyc`).set({
+      aadhaarURL, panURL, selfieURL,
+      verified: false,
+      submittedAt: Date.now()
+    });
+
+    status.innerText = "KYC submitted successfully!";
+    alert("KYC submitted successfully!");
+    window.location.href="dashboard.html";
+
+  } catch(err){
+    console.error(err);
+    status.innerText = "Error uploading files.";
+    alert("Error uploading files.");
+  }
+}
+</script>
+</body>
+</html>

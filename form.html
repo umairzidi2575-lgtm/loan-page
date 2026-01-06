@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instant Finance — Loan Application</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#2563eb; /* Thumb color */
+  --track-fill:#e5e7eb; /* Slider filled color */
+  --bg:#f4f6fb;
+  --danger:#dc2626;
+  --line-bg:#c7d2fe;
+}
+body{font-family:Inter,sans-serif;margin:0;padding:14px;background:var(--bg);}
+.wrap{max-width:520px;margin:auto;}
+.card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08);}
+.row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+label{font-weight:700;}
+input,select,button{padding:12px;border-radius:8px;border:1px solid #d1d5db;font-size:14px}
+button{background:var(--accent);color:#fff;border:0;font-weight:700;cursor:pointer}
+.error{color:var(--danger);font-size:13px}
+
+/* STEP CIRCLES + PROGRESS LINE */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  position: relative;
+}
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--line-bg);
+  color: #6b7280;
+  font-weight: 700;
+  background: #fff;
+  z-index: 2;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.circle.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* PROGRESS LINE */
+.line-container {
+  position: absolute;
+  top: 17px;
+  left: 18px;
+  right: 18px;
+  height: 6px;
+  background: #c7d2fe;
+  border-radius: 3px;
+  z-index: 1;
+  overflow: hidden;
+}
+.progress-line {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  border-radius: 3px;
+  transition: width 0.2s ease-in-out;
+}
+
+/* SLIDER STYLING */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  background: #ffffff; /* white base track */
+  outline: none;
+  margin-top: 6px;
+}
+
+/* Filled portion effect */
+input[type=range]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, var(--track-fill) 0%, var(--track-fill) 100%);
+}
+input[type=range]::-moz-range-track {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, var(--track-fill) 0%, var(--track-fill) 100%);
+}
+
+/* Thumb */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  margin-top: -6px;
+}
+input[type=range]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<div class="card">
+
+<h2>Loan Application</h2>
+
+<div class="steps">
+  <div class="line-container">
+    <div class="progress-line" id="progressLine"></div>
+  </div>
+  <div class="circle active" id="c1">1</div>
+  <div class="circle" id="c2">2</div>
+  <div class="circle" id="c3">3</div>
+</div>
+
+<!-- STEP 1 -->
+<div id="step1">
+<div class="row"><label>Name</label><input id="fullName"><div class="error" id="e1"></div></div>
+<div class="row"><label>Email</label><input id="email"><div class="error" id="e2"></div></div>
+<div class="row"><label>Mobile</label><input id="mobile" maxlength="10"><div class="error" id="e3"></div></div>
+<div class="row"><label>PAN</label><input id="pan" maxlength="10"><div class="error" id="e4"></div></div>
+<div class="row"><label>Aadhaar</label><input id="aadhaar" maxlength="12"><div class="error" id="e5"></div></div>
+<button id="btnNext1">Next</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" style="display:none">
+  <div class="row">
+    <label>Account Number</label>
+    <input id="account"><div class="error" id="e7"></div>
+  </div>
+  <div class="row">
+    <label>IFSC Code</label>
+    <input id="ifsc" maxlength="11"><div class="error" id="e6"></div>
+  </div>
+  <div class="row">
+    <label>Bank Name</label>
+    <input id="bank" readonly>
+  </div>
+
+  <div class="row">
+    <label>Loan Amount (₹50,000 – ₹5,00,000)</label>
+    <input type="range" id="amount" min="50000" max="500000" step="5000" value="50000">
+    <b id="amountLabel">₹50,000</b>
+  </div>
+
+  <div class="row">
+    <label>Tenure (Years)</label>
+    <select id="years"></select>
+  </div>
+
+  <b id="preview"></b><br><br>
+
+  <button id="btnNext2">Next</button>
+  <button id="btnBack2" style="background:#ddd;color:#000">Back</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" style="display:none">
+<h3>Review</h3>
+<div id="review"></div><br>
+<button id="btnSubmit">Submit</button>
+<button id="btnBack3" style="background:#ddd;color:#000">Back</button>
+<div id="msg"></div>
+</div>
+
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// Firebase init
+firebase.initializeApp({
+apiKey:"AIzaSyCsIYVX3OawpDlFZpKU3KpRsfM7QQoyWyY",
+databaseURL:"https://onlineservice-9f153-default-rtdb.firebaseio.com"
+});
+const db = firebase.database();
+
+/* ELEMENTS */
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+
+const fullName = document.getElementById("fullName");
+const email = document.getElementById("email");
+const mobile = document.getElementById("mobile");
+const pan = document.getElementById("pan");
+const aadhaar = document.getElementById("aadhaar");
+const ifsc = document.getElementById("ifsc");
+const bank = document.getElementById("bank");
+const account = document.getElementById("account");
+const amount = document.getElementById("amount");
+const amountLabel = document.getElementById("amountLabel");
+const years = document.getElementById("years");
+const preview = document.getElementById("preview");
+const review = document.getElementById("review");
+const msg = document.getElementById("msg");
+
+const btnNext1 = document.getElementById("btnNext1");
+const btnNext2 = document.getElementById("btnNext2");
+const btnBack2 = document.getElementById("btnBack2");
+const btnBack3 = document.getElementById("btnBack3");
+const btnSubmit = document.getElementById("btnSubmit");
+
+const c1 = document.getElementById("c1");
+const c2 = document.getElementById("c2");
+const c3 = document.getElementById("c3");
+const progressLine = document.getElementById("progressLine");
+
+const e1 = document.getElementById("e1");
+const e2 = document.getElementById("e2");
+const e3 = document.getElementById("e3");
+const e4 = document.getElementById("e4");
+const e5 = document.getElementById("e5");
+const e6 = document.getElementById("e6");
+const e7 = document.getElementById("e7");
+
+/* AUTO FORMAT */
+fullName.oninput = ()=>fullName.value=fullName.value.replace(/[^A-Za-z ]/g,'').replace(/\b\w/g,c=>c.toUpperCase());
+email.oninput = ()=>email.value=email.value.trim();
+mobile.oninput = ()=>mobile.value=mobile.value.replace(/\D/g,'').slice(0,10);
+pan.oninput = ()=>pan.value=pan.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+aadhaar.oninput = ()=>aadhaar.value=aadhaar.value.replace(/\D/g,'').slice(0,12);
+account.oninput = ()=>account.value=account.value.replace(/\D/g,'').slice(0,18);
+
+/* IFSC fetch */
+ifsc.oninput = ()=>{
+  ifsc.value=ifsc.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,11);
+  if(ifsc.value.length===11){
+    fetch(`https://ifsc.razorpay.com/${ifsc.value}`)
+      .then(r=>r.json())
+      .then(d=>bank.value=d.BANK||"")
+      .catch(()=>bank.value="");
+  }
+};
+
+/* TENURE LOGIC */
+function updateTenure(){
+  years.innerHTML="";
+  const amt=+amount.value;
+  if(amt <= 200000){
+    [1,2,3,5].forEach(y=>years.innerHTML+=`<option value="${y}">${y} Year${y>1?'s':''}</option>`);
+  } else {
+    for(let y=3;y<=10;y++) years.innerHTML+=`<option value="${y}">${y} Years</option>`;
+  }
+  updatePreview();
+}
+
+/* EMI PREVIEW */
+function updatePreview(){
+  const amt=+amount.value;
+  const yrs=+years.value;
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
+  preview.innerHTML=`Loan: ₹${amt.toLocaleString()} | Tenure: ${yrs} Years | EMI ₹${emi.toLocaleString()}`;
+}
+
+/* SLIDER FILL EFFECT */
+function updateSliderFill(){
+  const min=+amount.min, max=+amount.max, val=+amount.value;
+  const percent = ((val - min) / (max - min)) * 100;
+  amount.style.background = `linear-gradient(to right, var(--track-fill) ${percent}%, #ffffff ${percent}%)`;
+  amountLabel.innerText = "₹" + val.toLocaleString();
+}
+
+/* PROGRESS LINE FUNCTION */
+function updateProgressLine(){
+  let percent = 0;
+  if(step1.style.display==="block") percent = 0;
+  else if(step2.style.display==="block"){
+    const min = 50000, max = 500000;
+    const val = +amount.value;
+    percent = 25 + ((val - min)/(max-min))*50;
+  } else if(step3.style.display==="block") percent = 100;
+  progressLine.style.width = percent+"%";
+
+  c1.classList.toggle("active", percent >= 0);
+  c2.classList.toggle("active", percent >= 25);
+  c3.classList.toggle("active", percent >= 75);
+}
+
+/* INITIALIZE */
+updateTenure();
+updatePreview();
+updateSliderFill();
+updateProgressLine();
+
+/* UPDATE ON SLIDER MOVE */
+amount.addEventListener("input", ()=>{
+  updateSliderFill();
+  updateTenure();
+  updateProgressLine();
+});
+
+/* STEP 1 NEXT */
+btnNext1.addEventListener("click", ()=>{
+  e1.innerText=e2.innerText=e3.innerText=e4.innerText=e5.innerText="";
+  if(!/^[A-Za-z ]{3,}$/.test(fullName.value)) return e1.innerText="Invalid name";
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) return e2.innerText="Invalid email";
+  if(!/^[6-9]\d{9}$/.test(mobile.value)) return e3.innerText="Invalid mobile";
+  if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan.value)) return e4.innerText="Invalid PAN";
+  if(!/^\d{12}$/.test(aadhaar.value)) return e5.innerText="Invalid Aadhaar";
+
+  db.ref("loanUsers/"+aadhaar.value).once("value", snapshot=>{
+    if(snapshot.exists()) e5.innerText="Aadhaar already registered";
+    else {
+      step1.style.display="none";
+      step2.style.display="block";
+      updateProgressLine();
+    }
+  });
+});
+
+/* STEP 2 NEXT */
+btnNext2.addEventListener("click", ()=>{
+  e6.innerText=e7.innerText="";
+  if(!/^\d{9,18}$/.test(account.value)) return e7.innerText="Invalid account";
+  if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.value)) return e6.innerText="Invalid IFSC";
+
+  step2.style.display="none";
+  step3.style.display="block";
+  updateProgressLine();
+
+  const amt=+amount.value;
+  const yrs=+years.value;
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
+
+  review.innerHTML=`
+    <b>Name:</b> ${fullName.value}<br>
+    <b>Account Number:</b> ${account.value}<br>
+    <b>IFSC:</b> ${ifsc.value}<br>
+    <b>Bank:</b> ${bank.value}<br>
+    <b>Loan:</b> ₹${amt.toLocaleString()}<br>
+    <b>Tenure:</b> ${yrs} Years<br>
+    <b>Total Payable:</b> ₹${total.toLocaleString()}<br>
+    <b>EMI:</b> ₹${emi.toLocaleString()}
+  `;
+});
+
+/* BACK BUTTONS */
+btnBack2.addEventListener("click", ()=>{ step2.style.display="none"; step1.style.display="block"; updateProgressLine(); });
+btnBack3.addEventListener("click", ()=>{ step3.style.display="none"; step2.style.display="block"; updateProgressLine(); });
+
+/* SUBMIT */
+btnSubmit.addEventListener("click", ()=>{
+  const amt=+amount.value;
+  const yrs=+years.value;
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
+
+  db.ref("loanUsers/"+aadhaar.value).set({
+    name: fullName.value,email: email.value,mobile: mobile.value,
+    pan: pan.value,aadhaar: aadhaar.value,
+    account: account.value,ifsc: ifsc.value,bank: bank.value,
+    loanAmount: amt,tenureYears: yrs,
+    totalPayable: total,monthlyEMI: emi,
+    createdAt: Date.now()
+  });
+
+  msg.innerHTML="✅ Loan Submitted Successfully";
+
+  // Redirect to dashboard.html after 2 seconds
+  setTimeout(()=>{ window.location.href="dashboard.html"; }, 2000);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan EMI Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{
+  background:#f4f6fb;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+}
+.card{
+  background:#fff;
+  padding:25px 20px;
+  border-radius:20px;
+  box-shadow:0 10px 28px rgba(0,0,0,.08);
+}
+h2{text-align:center;margin-bottom:25px;font-size:20px}
+
+label{
+  font-size:14px;
+  color:#374151;
+  margin-top:14px;
+  display:block;
+}
+input,select{
+  width:100%;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid #d1d5db;
+  margin-top:8px;
+  font-size:16px;
+}
+
+/* REMOVE NUMBER INPUT SPINNERS */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {-webkit-appearance:none;margin:0;}
+input[type=number]{-moz-appearance:textfield;}
+
+button{
+  width:100%;
+  margin-top:25px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{
+  background:#1e40af;
+}
+
+.result{
+  margin-top:25px;
+  background:#f9fafb;
+  padding:18px;
+  border-radius:16px;
+}
+.result div{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-size:15px;
+}
+.value{font-weight:700}
+
+/* MOBILE RESPONSIVE */
+@media screen and (max-width:400px){
+  .card{padding:20px;}
+  input,select{padding:14px;font-size:15px;}
+  button{padding:14px;font-size:15px;}
+  .result{padding:14px;}
+  .result div{font-size:14px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+<h2>EMI Calculator</h2>
+
+<label>Loan Amount (₹)</label>
+<input type="number" id="amount" placeholder="e.g. 100000">
+
+<label>Interest Rate (% per year)</label>
+<input type="number" id="rate" placeholder="e.g. 12">
+
+<label>Tenure</label>
+<input type="number" id="time" placeholder="e.g. 12">
+
+<select id="type">
+  <option value="month">Months</option>
+  <option value="year">Years</option>
+</select>
+
+<button onclick="calculate()">Calculate EMI</button>
+
+<div class="result" id="result" style="display:none">
+  <div><span>Monthly EMI</span><span class="value">₹ <span id="emi"></span></span></div>
+  <div><span>Total Interest</span><span class="value">₹ <span id="interest"></span></span></div>
+  <div><span>Total Payable</span><span class="value">₹ <span id="total"></span></span></div>
+</div>
+
+</div>
+</div>
+
+<script>
+function calculate(){
+  let P = parseFloat(amount.value);
+  let R = parseFloat(rate.value)/12/100;
+  let T = parseFloat(time.value);
+
+  if(type.value==="year") T = T*12;
+
+  if(!P || !R || !T){ alert("Please fill all fields"); return; }
+
+  let EMI = (P*R*Math.pow(1+R,T))/(Math.pow(1+R,T)-1);
+  let total = EMI*T;
+  let interest = total - P;
+
+  document.getElementById("emi").innerText = EMI.toFixed(0);
+  document.getElementById("total").innerText = total.toFixed(0);
+  document.getElementById("interest").innerText = interest.toFixed(0);
+  document.getElementById("result").style.display="block";
+}
+</script>
+
+</body>
+</html>

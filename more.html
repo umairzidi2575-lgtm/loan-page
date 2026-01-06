@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhani Finance – More</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+
+body{
+  background:#f4f6fb;
+  color:#111827;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+
+/* TOP HEADER */
+.top-header{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  padding:14px;
+  z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  border-bottom-left-radius:16px;
+  border-bottom-right-radius:16px;
+}
+.top-header h2{font-size:16px;}
+.top-header p{font-size:12px;color:#6b7280;margin-top:4px}
+
+/* MAIN CONTAINER */
+.container{
+  max-width:480px;
+  margin:auto;
+  padding:12px 14px;
+  padding-top:110px;
+}
+
+/* GRID */
+.grid-container{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.grid-item{text-align:center}
+.grid-btn{
+  width:60px;height:60px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  margin:auto;
+  cursor:pointer;
+  box-shadow:0 5px 15px rgba(0,0,0,.2);
+  transition:0.3s;
+}
+.grid-btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 8px 18px rgba(0,0,0,.3);
+}
+.grid-label{
+  font-size:12px;
+  margin-top:6px;
+  color:#374151;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  height:70px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 -4px 15px rgba(0,0,0,.2);
+  border-top-left-radius:18px;
+  border-top-right-radius:18px;
+}
+.nav-item{
+  text-align:center;
+  font-size:22px;
+  color:#bfdbfe;
+  cursor:pointer;
+}
+.nav-item span{
+  font-size:11px;
+  display:block;
+}
+.nav-item.active{
+  color:#ffffff;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <h2>More Options</h2>
+  <p>Explore extra features</p>
+</div>
+
+<div class="container">
+
+<!-- GRID ROW 1 (FAQ & Terms) -->
+<div class="grid-container">
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('faq.html')">❓</div>
+    <div class="grid-label">FAQ</div>
+  </div>
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('terms.html')">📜</div>
+    <div class="grid-label">Terms</div>
+  </div>
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('support.html')">💬</div>
+    <div class="grid-label">Support</div>
+  </div>
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('settings.html')">⚙️</div>
+    <div class="grid-label">Settings</div>
+  </div>
+</div>
+
+<!-- GRID ROW 2 (Feedback & About) -->
+<div class="grid-container">
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('feedback.html')">📝</div>
+    <div class="grid-label">Feedback</div>
+  </div>
+  <div class="grid-item">
+    <div class="grid-btn" onclick="go('about.html')">ℹ️</div>
+    <div class="grid-label">About</div>
+  </div>
+</div>
+
+</div>
+
+<!-- 🔥 MOBILE BOTTOM NAV UPGRADE -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="go('dashboard.html')" id="navHome">
+    <div class="nav-circle"><span>🏠</span></div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="go('loanapplication.html')" id="navLoans">
+    <div class="nav-circle"><span>📄</span></div>
+    <span>Loans</span>
+  </div>
+  <div class="nav-item" onclick="go('loanbalance.html')" id="navCoins">
+    <div class="nav-circle"><span>💰</span></div>
+    <span>Coins</span>
+  </div>
+  <div class="nav-item" onclick="go('profile.html')" id="navProfile">
+    <div class="nav-circle"><span>👤</span></div>
+    <span>Profile</span>
+  </div>
+</div>
+
+<style>
+/* ===== UPGRADED BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;
+  bottom:0; 
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:100;
+  background:#fff; 
+  padding:10px 0;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  box-shadow:0 -4px 15px rgba(0,0,0,0.1);
+}
+
+.nav-item{
+  text-align:center;
+  cursor:pointer;
+  transition:0.3s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:70px;
+}
+
+.nav-item span{
+  font-size:12px;
+  display:block;
+  color:#6b7280;
+  margin-top:4px;
+  font-weight:500;
+}
+
+.nav-circle{
+  width:50px;
+  height:50px;
+  background:#f3f4f6;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  color:#2563eb;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  transition:0.3s;
+}
+
+.nav-item.active .nav-circle{
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+  color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 6px 16px rgba(0,0,0,0.2);
+}
+
+.nav-circle:hover{
+  transform:scale(1.1);
+  box-shadow:0 6px 14px rgba(0,0,0,.2);
+}
+
+/* MOBILE RESPONSIVE */
+@media screen and (max-width:400px){
+  .nav-item{width:60px;}
+  .nav-item span{font-size:11px;}
+  .nav-circle{width:45px;height:45px;font-size:20px;}
+}
+</style>
+
+<script>
+// ===== HIGHLIGHT ACTIVE NAV =====
+const currentPage = window.location.pathname.split("/").pop();
+document.querySelectorAll(".nav-item").forEach(item=>{
+  item.classList.remove("active");
+});
+switch(currentPage){
+  case "dashboard.html": document.getElementById("navHome").classList.add("active"); break;
+  case "loanapplication.html": document.getElementById("navLoans").classList.add("active"); break;
+  case "loanbalance.html": document.getElementById("navCoins").classList.add("active"); break;
+  case "profile.html": document.getElementById("navProfile").classList.add("active"); break;
+}
+</script>
+
+<script>
+// NAVIGATION FUNCTION
+function go(page){ location.href=page; }
+</script>
+
+</body>
+</html>

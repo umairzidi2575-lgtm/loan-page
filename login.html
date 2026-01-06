@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dhani Finance — Dashboard</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f4f6fb}
+.wrap{max-width:900px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
+.hidden{display:none}
+button{padding:10px;border-radius:8px;border:0;background:#2563eb;color:#fff;font-weight:700;width:100%;cursor:pointer}
+.secondary{background:#6b7280}
+.payment{border:1px dashed #c7d2fe;padding:12px;border-radius:10px;margin-top:10px}
+input{padding:10px;border-radius:8px;border:1px solid #ccc;width:100%;margin-top:8px}
+a.download{display:block;margin-top:6px;font-weight:700;color:#2563eb}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div id="dashboard" class="card hidden">
+  <h2>Your Loan Dashboard</h2>
+  <div id="statusText"></div>
+
+  <!-- APPROVAL -->
+  <div id="approvalBox" class="payment hidden">
+    <b>Approval Letter</b>
+    <a id="approvalLink" class="download" target="_blank">Download Approval Letter</a>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1" class="payment hidden">
+    <b>Processing Fee</b>
+    <button onclick="showPayOptions()">Pay Processing Fee</button>
+
+    <div id="payOptions" class="hidden">
+      <button onclick="payUPI()">Pay by UPI</button>
+      <button class="secondary" onclick="alert('Bank Details: 1234567890 IFSC ABCD0123456')">Bank Details</button>
+    </div>
+
+    <div id="utrBox" class="hidden">
+      <input id="utrInput" placeholder="Enter UTR Number"/>
+      <button onclick="submitUTR()">Submit UTR</button>
+    </div>
+
+    <div id="waitMsg" class="hidden">⏳ Waiting for admin confirmation...</div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="payment hidden">
+    <b>Service + TDS Charges</b>
+    <p>Now available after confirmation</p>
+  </div>
+
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsIYVX3OawpDlFZpKU3KpRsfM7QQoyWyY",
+    authDomain: "onlineservice-9f153.firebaseapp.com",
+    databaseURL: "https://onlineservice-9f153-default-rtdb.firebaseio.com",
+    projectId: "onlineservice-9f153",
+    storageBucket: "onlineservice-9f153.appspot.com",
+    messagingSenderId: "1040271430967",
+    appId: "1:1040271430967:web:6325b056257454943d36b2"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
+const aadhaar=localStorage.getItem("aadhaar");
+const dash=document.getElementById("dashboard");
+const statusText=document.getElementById("statusText");
+const approvalBox=document.getElementById("approvalBox");
+const approvalLink=document.getElementById("approvalLink");
+const step1=document.getElementById("step1");
+const step2=document.getElementById("step2");
+
+let appId=null;
+
+// ===== LOAD APPLICATION =====
+db.ref("loanApplications").orderByChild("aadhaar").equalTo(aadhaar)
+.on("value",snap=>{
+  const data=snap.val();
+  if(!data) return alert("Application not found");
+  appId=Object.keys(data)[0];
+  const app=data[appId];
+  dash.classList.remove("hidden");
+
+  statusText.innerHTML="<b>Status:</b> "+app.status;
+
+  if(app.status==="approved"){
+    step1.classList.remove("hidden");
+    if(app.approvalLetter?.url){
+      approvalBox.classList.remove("hidden");
+      approvalLink.href=app.approvalLetter.url;
+    }
+  }
+
+  if(app.payments?.processingConfirmedAt){
+    const diff=Date.now()-app.payments.processingConfirmedAt;
+    if(diff>=600000){ // 10 minutes
+      step2.classList.remove("hidden");
+    } else {
+      setTimeout(()=>step2.classList.remove("hidden"),600000-diff);
+    }
+  }
+});
+
+// ===== PAYMENT FLOW =====
+function showPayOptions(){
+  document.getElementById("payOptions").classList.remove("hidden");
+}
+
+function payUPI(){
+  const upi="upi://pay?pa=test@upi&pn=DhaniFinance&am=500&cu=INR";
+  window.location.href=upi;
+  setTimeout(()=>document.getElementById("utrBox").classList.remove("hidden"),2000);
+}
+
+function submitUTR(){
+  const utr=document.getElementById("utrInput").value.trim();
+  if(!utr) return alert("Enter UTR");
+  db.ref(`loanApplications/${appId}/payments`).update({
+    processingPaid:true,
+    utr:utr
+  });
+  document.getElementById("utrBox").classList.add("hidden");
+  document.getElementById("waitMsg").classList.remove("hidden");
+}
+</script>
+</body>
+</html>

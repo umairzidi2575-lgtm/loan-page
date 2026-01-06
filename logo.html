@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhani Finance Loan Approved Seal</title>
+<style>
+/* Reset and base styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #fdf6e6, #fffdf2);
+}
+
+/* Container for the seal */
+.seal-container {
+  position: relative;
+  width: 350px;
+  height: 350px;
+}
+
+/* Gold circle background */
+.seal-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff9e6 0%, #f0c14b 100%);
+  border: 6px solid #d4af37;
+  box-shadow: 0 0 30px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  animation: pulse 2s infinite alternate;
+}
+
+/* Pulse animation for gold effect */
+@keyframes pulse {
+  0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+  100% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+}
+
+/* Ribbon */
+.ribbon {
+  position: absolute;
+  top: 45%;
+  left: -20px;
+  width: 400px;
+  height: 60px;
+  background: #d11f1f;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  transform: rotate(-15deg);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Ribbon shadow effect */
+.ribbon::before, .ribbon::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 60px;
+  background: #a80000;
+  top: 0;
+}
+.ribbon::before { left: -20px; clip-path: polygon(0 0, 100% 0, 0% 100%); }
+.ribbon::after { right: -20px; clip-path: polygon(100% 0, 100% 100%, 0% 100%); }
+
+/* Top and bottom text */
+.seal-text-top, .seal-text-bottom {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #222;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+/* Arc text effect using rotate */
+.seal-text-top {
+  top: 25px;
+}
+.seal-text-bottom {
+  bottom: 25px;
+}
+
+/* Stars inside the seal */
+.stars-container {
+  position: absolute;
+  display: flex;
+  gap: 15px;
+}
+.stars-container.top {
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.stars-container.bottom {
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Star SVG styling */
+.star {
+  width: 25px;
+  height: 25px;
+  fill: #222;
+  animation: star-twinkle 1.5s infinite alternate;
+}
+
+@keyframes star-twinkle {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+/* Optional glow effect behind seal */
+.seal-circle::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+}
+
+/* Decorative edges */
+.seal-edge {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    #d4af37 0deg 15deg,
+    #f7e1a0 15deg 30deg
+  );
+  mask: radial-gradient(circle, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+  -webkit-mask: radial-gradient(circle, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+  animation: rotate-edge 10s linear infinite;
+}
+
+@keyframes rotate-edge {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media(max-width: 400px) {
+  .seal-container {
+    width: 250px;
+    height: 250px;
+  }
+  .ribbon {
+    font-size: 1.1rem;
+    width: 300px;
+    height: 50px;
+    top: 40%;
+  }
+  .star { width: 18px; height: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="seal-container">
+  <div class="seal-edge"></div>
+  <div class="seal-circle"></div>
+  <div class="ribbon">DHANI FINANCE</div>
+  <div class="seal-text-top">LOAN APPROVED</div>
+  <div class="seal-text-bottom">LOAN APPROVED</div>
+  <div class="stars-container top">
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+  </div>
+  <div class="stars-container bottom">
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+    <svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10"/></svg>
+  </div>
+</div>
+
+</body>
+</html>

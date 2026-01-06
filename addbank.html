@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Bank Details</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{
+  background:linear-gradient(135deg,#eef2ff,#fdf2f8);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:16px;
+  padding:22px;
+  box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+h2{
+  text-align:center;
+  margin-bottom:6px;
+  font-weight:700;
+}
+.sub{
+  text-align:center;
+  color:#666;
+  font-size:14px;
+  margin-bottom:18px;
+}
+.group{
+  margin-bottom:14px;
+}
+label{
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1.5px solid #ddd;
+  font-size:14px;
+}
+input:focus{
+  outline:none;
+  border-color:#6366f1;
+}
+.readonly{
+  background:#f3f4f6;
+}
+.status{
+  font-size:13px;
+  margin-top:6px;
+}
+.success{color:#16a34a;}
+.error{color:#dc2626;}
+button{
+  width:100%;
+  margin-top:14px;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  font-size:15px;
+  color:#fff;
+  background:linear-gradient(135deg,#6366f1,#ec4899);
+  cursor:pointer;
+}
+button:disabled{
+  opacity:.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Add Bank Details</h2>
+  <div class="sub">Secure & verified bank information</div>
+
+  <div class="group">
+    <label>Account Holder Name</label>
+    <input id="holder" placeholder="Full Name">
+  </div>
+
+  <div class="group">
+    <label>Account Number</label>
+    <input id="account" type="number" placeholder="Enter Account Number">
+  </div>
+
+  <div class="group">
+    <label>IFSC Code</label>
+    <input id="ifsc" placeholder="Enter IFSC Code">
+    <div id="ifscStatus" class="status"></div>
+  </div>
+
+  <div class="group">
+    <label>Bank Name</label>
+    <input id="bank" class="readonly" readonly>
+  </div>
+
+  <div class="group">
+    <label>Branch</label>
+    <input id="branch" class="readonly" readonly>
+  </div>
+
+  <button id="saveBtn" disabled>Save Bank Details</button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+/* 🔥 FIREBASE CONFIG (replace with your own) */
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_PROJECT",
+});
+
+/* USER ID (example) */
+const userId = "loan_user_001";
+
+const holder = document.getElementById("holder");
+const account = document.getElementById("account");
+const ifsc = document.getElementById("ifsc");
+const bank = document.getElementById("bank");
+const branch = document.getElementById("branch");
+const statusBox = document.getElementById("ifscStatus");
+const saveBtn = document.getElementById("saveBtn");
+
+/* 🔁 AUTO LOAD EXISTING DATA */
+firebase.database().ref("bankDetails/"+userId).once("value").then(snap=>{
+  if(snap.exists()){
+    const d = snap.val();
+    holder.value = d.holder || "";
+    account.value = d.account || "";
+    ifsc.value = d.ifsc || "";
+    bank.value = d.bank || "";
+    branch.value = d.branch || "";
+    saveBtn.disabled = false;
+  }
+});
+
+/* 🔠 IFSC AUTO CAPITAL + VERIFY */
+ifsc.addEventListener("input", ()=>{
+  ifsc.value = ifsc.value.toUpperCase();
+  if(ifsc.value.length === 11){
+    verifyIFSC(ifsc.value);
+  }else{
+    resetIFSC();
+  }
+});
+
+function resetIFSC(){
+  bank.value = "";
+  branch.value = "";
+  saveBtn.disabled = true;
+  statusBox.innerHTML = "";
+}
+
+/* ✅ REAL IFSC API CHECK */
+function verifyIFSC(code){
+  statusBox.innerHTML = "Checking IFSC...";
+  fetch("https://ifsc.razorpay.com/"+code)
+  .then(res=>{
+    if(!res.ok) throw "Invalid";
+    return res.json();
+  })
+  .then(data=>{
+    bank.value = data.BANK;
+    branch.value = data.BRANCH;
+    statusBox.innerHTML = "✔ IFSC Verified";
+    statusBox.className = "status success";
+    saveBtn.disabled = false;
+  })
+  .catch(()=>{
+    resetIFSC();
+    statusBox.innerHTML = "❌ Invalid IFSC Code";
+    statusBox.className = "status error";
+    alert("Invalid IFSC Code. Please check again.");
+  });
+}
+
+/* 💾 SAVE DATA */
+saveBtn.onclick = ()=>{
+  if(account.value.length < 6){
+    alert("Invalid Account Number");
+    return;
+  }
+  firebase.database().ref("bankDetails/"+userId).set({
+    holder: holder.value,
+    account: account.value,
+    ifsc: ifsc.value,
+    bank: bank.value,
+    branch: branch.value,
+    time: Date.now()
+  }).then(()=>{
+    alert("Bank details saved successfully ✅");
+  });
+};
+</script>
+
+</body>
+</html>
