@@ -428,60 +428,40 @@ UPI ID – <b>${payInfo.upi || "-"}</b>
     console.error(err);
   });
 });
-
-document.getElementById("stopReminderBtn").addEventListener("click", () => {
-    clearInterval(reminderInterval);
-    document.getElementById("stopReminderBtn").style.display = "none";
-    alert("Reminder stopped. Thank you!");
-});
-
 document.getElementById("downloadPDF").addEventListener("click", () => {
-
   const pdfContainer = document.createElement("div");
-  pdfContainer.style.background = "#fff";
-  pdfContainer.style.padding = "10px";
+  pdfContainer.style.padding = "10px"; 
 
-  const page1 = document.createElement("div");
-  page1.appendChild(document.getElementById("approvedFields").cloneNode(true));
-  page1.appendChild(document.getElementById("approvedMsg").cloneNode(true));
-  pdfContainer.appendChild(page1);
+  const firstPage = document.createElement("div");
+  firstPage.className = "page-wrapper";
+
+  const approvedFieldsClone = document.getElementById("approvedFields").cloneNode(true);
+  approvedFieldsClone.style.display = "block";
+  firstPage.appendChild(approvedFieldsClone);
+
+  const approvedMsgClone = document.getElementById("approvedMsg").cloneNode(true);
+  approvedMsgClone.style.display = "block";
+  firstPage.appendChild(approvedMsgClone);
+
+  pdfContainer.appendChild(firstPage);
 
   ["page2","page3","page4"].forEach(id=>{
-    const p = document.getElementById(id).cloneNode(true);
-    p.style.display="block";
-    pdfContainer.appendChild(p);
+    const pageClone = document.getElementById(id).cloneNode(true);
+    pageClone.style.display = "block";
+    const wrapper = document.createElement("div");
+    wrapper.className = "page-wrapper";
+    wrapper.appendChild(pageClone);
+    pdfContainer.appendChild(wrapper);
   });
 
-  html2pdf()
-    .set({
-      jsPDF:{unit:'in',format:'a5',orientation:'portrait'},
-      html2canvas:{scale:2},
-      margin:0.3
-    })
-    .from(pdfContainer)
-    .toPdf()
-    .get('pdf')
-    .then(pdf => {
-
-      const blob = pdf.output('blob');
-
-      const ref = firebase.storage().ref(
-        "loan_letters/Loan_" + Date.now() + ".pdf"
-      );
-
-      ref.put(blob).then(snap=>{
-        snap.ref.getDownloadURL().then(url=>{
-
-          // 🔥 THIS LINE MAKES ANDROID DOWNLOAD FILE
-          window.location.href = url;
-
-        });
-      });
-
-    });
+  html2pdf().set({
+    margin:0.2,
+    filename:(document.getElementById("display_name").textContent || "LoanUser")+".pdf",
+    image:{type:'jpeg',quality:1},
+    html2canvas:{scale:2,useCORS:true,logging:true, backgroundColor: null},
+    jsPDF:{unit:'in',format:'a5',orientation:'portrait'}
+  }).from(pdfContainer).save();
 });
-
-
 </script>
 
 </body>
