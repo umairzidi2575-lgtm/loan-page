@@ -292,6 +292,8 @@ h1{
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- QR CODE LIBRARY -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -427,75 +429,171 @@ UPI ID – <b>${payInfo.upi || "-"}</b>
     console.error(err);
   });
 });
-document.getElementById("downloadPDF").addEventListener("click", () => {
 
+document.getElementById("downloadPDF").addEventListener("click", async () => {
+
+  /* ========= BASIC VALIDATION ========= */
+  const userName = display_name?.textContent?.trim();
+  if (!userName) {
+    alert("User name missing!");
+    return;
+  }
+
+  /* ========= GET UPI ID (CHANGE ID IF NEEDED) ========= */
+  const upiElement = document.getElementById("upi_id");
+  const upiId = upiElement ? upiElement.textContent.trim() : "";
+
+  /* ========= PDF CONTAINER ========= */
   const pdfContainer = document.createElement("div");
-  // Create watermark for PDF
-const watermark = document.createElement("div");
-watermark.textContent = "DHANI FINANCE";
-watermark.style.position = "absolute";
-watermark.style.top = "50%";
-watermark.style.left = "50%";
-watermark.style.transform = "translate(-50%, -50%) rotate(-30deg)";
-watermark.style.fontSize = "50px";
-watermark.style.fontWeight = "900";
-watermark.style.color = "rgba(180,180,180,0.12)";
-watermark.style.pointerEvents = "none";
-watermark.style.zIndex = "0";
+  pdfContainer.style.background = "#ffffff";
+  pdfContainer.style.fontFamily = "Arial, sans-serif";
 
-// Append watermark to pdfContainer BEFORE pages
-pdfContainer.insertBefore(watermark, pdfContainer.firstChild);
+  /* ========= WATERMARK ========= */
+  function createWatermark(text) {
+    const wm = document.createElement("div");
+    wm.innerText = text;
+    wm.style.position = "absolute";
+    wm.style.top = "50%";
+    wm.style.left = "50%";
+    wm.style.transform = "translate(-50%, -50%) rotate(-30deg)";
+    wm.style.fontSize = "60px";
+    wm.style.fontWeight = "900";
+    wm.style.color = "rgba(180,180,180,0.12)";
+    wm.style.pointerEvents = "none";
+    wm.style.zIndex = "0";
+    return wm;
+  }
 
+  /* ========= FOOTER ========= */
+  function addFooter(page, pageNo) {
+    const footer = document.createElement("div");
+    footer.style.position = "absolute";
+    footer.style.bottom = "10px";
+    footer.style.left = "0";
+    footer.style.right = "0";
+    footer.style.textAlign = "center";
+    footer.style.fontSize = "10px";
+    footer.style.color = "#555";
+    footer.innerText = `© DHANI FINANCE | Page ${pageNo}`;
+    page.appendChild(footer);
+  }
+
+  /* ========= QR CODE (ONLY IF UPI EXISTS) ========= */
+  function addQRCode(page) {
+    if (!upiId) return; // ❌ No UPI → No QR
+
+    const qrWrapper = document.createElement("div");
+    qrWrapper.style.marginTop = "20px";
+    qrWrapper.style.textAlign = "center";
+
+    const qrDiv = document.createElement("div");
+    qrWrapper.appendChild(qrDiv);
+    page.appendChild(qrWrapper);
+
+    new QRCode(qrDiv, {
+      text: `upi://pay?pa=${upiId}&pn=DHANI%20FINANCE`,
+      width: 100,
+      height: 100
+    });
+
+    const qrLabel = document.createElement("div");
+    qrLabel.innerText = `UPI ID: ${upiId}`;
+    qrLabel.style.fontSize = "12px";
+    qrLabel.style.marginTop = "6px";
+    page.appendChild(qrLabel);
+  }
+
+  let pageNo = 1;
 
   /* ========= PAGE 1 ========= */
   const firstPage = document.createElement("div");
   firstPage.className = "page-wrapper";
+  firstPage.style.position = "relative";
+  firstPage.style.padding = "25px";
 
-  // 🔥 CLONE HEADER
+  firstPage.appendChild(createWatermark("DHANI FINANCE"));
+
   const header = document.querySelector("h1").cloneNode(true);
-  header.style.marginBottom = "10px";
+  header.style.marginBottom = "15px";
   firstPage.appendChild(header);
 
-  // Approved fields
   const approvedFieldsClone = document.getElementById("approvedFields").cloneNode(true);
   approvedFieldsClone.style.display = "block";
   firstPage.appendChild(approvedFieldsClone);
 
-  // Approved letter
   const approvedMsgClone = document.getElementById("approvedMsg").cloneNode(true);
   approvedMsgClone.style.display = "block";
+  approvedMsgClone.style.marginTop = "10px";
   firstPage.appendChild(approvedMsgClone);
 
+  addQRCode(firstPage);
+  addFooter(firstPage, pageNo++);
   pdfContainer.appendChild(firstPage);
 
   /* ========= OTHER PAGES ========= */
-  ["page2","page3","page4"].forEach(id=>{
+  ["page2", "page3", "page4"].forEach(id => {
     const page = document.getElementById(id);
-    if(page && page.style.display !== "none"){
+    if (page && page.style.display !== "none") {
+
       const wrapper = document.createElement("div");
       wrapper.className = "page-wrapper";
+      wrapper.style.position = "relative";
+      wrapper.style.padding = "25px";
+
+      wrapper.appendChild(createWatermark("DHANI FINANCE"));
 
       const clone = page.cloneNode(true);
       clone.style.display = "block";
-
       wrapper.appendChild(clone);
+
+      addQRCode(wrapper);
+      addFooter(wrapper, pageNo++);
       pdfContainer.appendChild(wrapper);
     }
   });
 
-  html2pdf().set({
-    margin:0.25,
-    filename:(display_name.textContent || "LoanUser") + ".pdf",
-    image:{type:"jpeg",quality:1},
-    html2canvas:{
-      scale:2,
-      useCORS:true,
-      backgroundColor:"#fffdf2"
-    },
-    jsPDF:{unit:"in",format:"a5",orientation:"portrait"}
-  }).from(pdfContainer).save();
+  /* ========= FILE NAME ========= */
+  const today = new Date().toISOString().split("T")[0];
+  const fileName = `${userName}_Approva_lLetter.pdf`;
+
+
+  /* ========= GENERATE PDF ========= */
+  await html2pdf().set({
+  margin: [0.5, 0.4, 0.6, 0.4],
+  filename: fileName,
+  image: { type: "jpeg", quality: 0.95 },
+  html2canvas: {
+    scale: 1.8, // lower scale → keeps text bigger
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  },
+  jsPDF: {
+    unit: "in",
+    format: "a4",
+    orientation: "portrait"
+  }
+}).from(pdfContainer).save();
+
 });
 </script>
+
+<style>
+.page-wrapper {
+  page-break-after: always;
+  box-sizing: border-box;
+}
+
+/* Mobile friendly */
+@media print {
+  body, .page-wrapper, .page p, .page li, .approved-content {
+    font-size: 14px !important; /* increase font for PDF */
+  }
+  h1, h2 {
+    font-size: 18px !important;
+  }
+}
+
+</style>
 
 </body>
 </html>
