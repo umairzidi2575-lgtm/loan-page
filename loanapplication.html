@@ -342,22 +342,28 @@ firebase.auth().onAuthStateChanged(user => {
     display_aadhaar.textContent = d.aadhaar || "-";
     display_amount.textContent = "₹" + (d.amount || 0).toLocaleString("en-IN");
 
-    if(d.status === "Approved"){
-      pendingMsg.style.display = "none";
-      document.getElementById("approvedFields").style.display = "block";
-      document.getElementById("downloadPDF").style.display = "block";
+    // Inside Firebase data fetch (d = snapshot value)
+if(d.status === "Approved"){
+    // Hide pending
+    pendingMsg.style.display = "none";
+    approvedMsg.style.display = "block";
+    document.getElementById("approvedFields").style.display = "block";
+    document.getElementById("downloadPDF").style.display = "block";
 
-      let totalMonths = (parseInt(d.tenureYears || 0) * 12) + parseInt(d.tenureMonths || 0);
-      const formattedTenure = formatTenure(totalMonths);
+    // Tenure format
+    let totalMonths = (parseInt(d.tenureYears || 0) * 12) + parseInt(d.tenureMonths || 0);
+    const formattedTenure = formatTenure(totalMonths);
 
-      // UPI Link
-      const upiLink = `upi://pay?pa=${payInfo.upi||""}&pn=${encodeURIComponent(payInfo.name||"Dhani Finance")}&am=${d.processingFee||0}&cu=INR`;
+    // Pay info
+    const payInfo = d.payAtThisAccount || {};
+    const processingFee = parseFloat(d.processingFee || 0).toFixed(2); // Always numeric
 
-      approvedMsg.innerHTML = `
+    // Approved message
+    approvedMsg.innerHTML = `
 <div class="approved-content">
 <p><b>Dear ${d.name || ""},</b></p>
-<p>We are very glad to inform you that in response to your request for a loan in order to meet your financial needs.
-At the outset we welcome you to meet of Dhani Finance pvt.Ltd.</p><br>
+<p>We are very glad to inform you that in response to your request for a loan to meet your financial needs.
+At the outset we welcome you to Dhani Finance Pvt. Ltd.</p><br>
 
 <p>You requested a short term loan, Sum of loan amount
 <b>₹${(d.amount||0).toLocaleString("en-IN")}/-</b>
@@ -368,7 +374,7 @@ Your monthly EMI is <b>₹${(d.emi||0).toLocaleString("en-IN")}/-</b>
 at the rate of <b>${d.interestRate||"0"}%</b>.</p><br>
 
 <p>When you submit File Processing Fee of
-<b>₹${(d.processingFee||0).toLocaleString("en-IN")}/-</b>, we will credit
+<b>₹${(processingFee)}/-</b>, we will credit
 your approved loan to your bank account.</p><br>
 
 <p><b>Pay at This Account</b></p>
@@ -392,26 +398,37 @@ UPI ID – <b>${payInfo.upi || "-"}</b>
 <p class="signatory">Authorized Signatory<br>Dhani Finance Pvt. Ltd.</p>
 </div>`;
 
-      // Generate QR code
-      new QRCode(document.getElementById("upiQR"), {
-        text: upiLink,
-        width: 120,
-        height: 120
-      });
+      // ✅ Generate proper UPI QR
+    const upiId = payInfo.upi || "";
+    if(upiId && processingFee > 0){
+        const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payInfo.name || "Dhani Finance")}&cu=INR&am=${processingFee}&tn=Loan Processing Fee`;
+        
+        // Clear previous QR
+        document.getElementById("upiQR").innerHTML = "";
+        
+        new QRCode(document.getElementById("upiQR"), {
+            text: upiLink,
+            width: 120,
+            height: 120
+        });
+    }
 
-      approvedMsg.style.display="block";
-      callAdminBtn.href = "tel:" + (payInfo.helpline || "1800123456");
+    // Admin call button
+    callAdminBtn.href = "tel:" + (payInfo.helpline || "1800123456");
 
-      document.getElementById("page2").style.display="block";
-      document.getElementById("page3").style.display="block";
-      document.getElementById("page4").style.display="block";
+    // Show other pages
+    ["page2","page3","page4"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = "block";
+    });
 
-      if(d.processingFee && d.processingFee > 0){
-          document.getElementById("stopReminderBtn").style.display = "flex";
-          reminderInterval = setInterval(() => {
-              alert(`Dear ${d.name || "User"}, your loan has been approved. Please submit the processing fee of ₹${d.processingFee.toLocaleString("en-IN")}/- to credit your loan.`);
-          }, 30000);
-      }
+    // Optional reminder alert
+    if(d.processingFee && d.processingFee > 0){
+        reminderInterval = setInterval(() => {
+            alert(`Dear ${d.name || "User"}, your loan has been approved. Please submit the processing fee of ₹${processingFee}/- to credit your loan.`);
+        }, 30000);
+    }
+
 
     } else {
       pendingMsg.style.display = "block";
@@ -554,7 +571,7 @@ document.getElementById("downloadPDF").addEventListener("click", async () => {
 
   /* ========= FILE NAME ========= */
   const today = new Date().toISOString().split("T")[0];
-  const fileName = `${userName}_Approva_lLetter.pdf`;
+  const fileName = `${userName}_Approva_lLetter_.pdf`;
 
 
   /* ========= GENERATE PDF ========= */
