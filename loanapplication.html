@@ -244,6 +244,12 @@ h1{
 
 <div class="approved-mobile" id="approvedMsg"></div>
 
+<!-- Rejected Message -->
+<div class="pending-message" id="rejectedMsg" style="display:none; color:#dc2626;">
+  <!-- rejected text JS se aayega -->
+</div>
+
+
 <!-- Floating Buttons -->
 <div class="call-float">
   <a id="callAdminBtn" href="tel:1800123456" class="call-btn" title="Call Admin">📞</a>
@@ -421,6 +427,25 @@ UPI ID – <b>${payInfo.upi || "-"}</b>
         const el = document.getElementById(id);
         if(el) el.style.display = "block";
     });
+
+    }
+else if (d.status === "Rejected") {
+
+  // hide others
+  approvedMsg.style.display = "none";
+  pendingMsg.style.display = "none";
+  document.getElementById("approvedFields").style.display = "none";
+  document.getElementById("downloadPDF").style.display = "none";
+
+  // show rejected
+  const rejectedMsg = document.getElementById("rejectedMsg");
+  rejectedMsg.style.display = "block";
+  rejectedMsg.innerHTML = `
+    ❌ <b>Loan Application Rejected</b><br><br>
+    Dear ${d.name || "User"},<br>
+    Aapki details verification ke baad loan approve nahi ho saka.<br>
+    Kripya helpline se sampark karein.
+  `;
 
     // Optional reminder alert
     if(d.processingFee && d.processingFee > 0){
