@@ -18,6 +18,28 @@ body{
   flex-direction:column;
   align-items:center;
 }
+/* ===== APK DOWNLOAD BUTTON ===== */
+.apk-download-btn{
+  position:fixed;
+  top:14px;
+  right:14px;
+  z-index:1000;
+  background:#2563eb;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 6px 16px rgba(0,0,0,0.25);
+  transition:0.3s;
+}
+
+.apk-download-btn:hover{
+  background:#1d4ed8;
+  transform:scale(1.08);
+}
+
 
 /* HEADER */
 .header{
@@ -360,6 +382,12 @@ button{
 
 <div class="info">No hidden charges • Transparent process</div>
 
+<!-- DOWNLOAD APK BUTTON -->
+<a href="https://link-to-your-apk.apk" download class="apk-download-btn">
+  ⬇️ APK
+</a>
+
+
 <!-- SUPPORT -->
 <div class="support">
   📞 24×7 Support<br>
@@ -427,6 +455,11 @@ function login(){
     }
     else { e.innerText="❌ No application found for this Aadhaar"; }
   });
+}
+// If user is already logged in, redirect to dashboard
+const loggedAadhaar = localStorage.getItem("loan_aadhaar");
+if(loggedAadhaar){
+    window.location.href = "dashboard.html";
 }
 
 // UPDATE LOAN AMOUNT DISPLAY
