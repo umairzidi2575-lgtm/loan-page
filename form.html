@@ -408,6 +408,7 @@ btnSubmit.addEventListener("click", ()=>{
   const yrs=+years.value;
   const total=amt+(amt*0.05*yrs);
   const emi=Math.ceil(total/(yrs*12));
+  const aadhaarNo = aadhaar.value.replace(/\s/g,'');
 
   db.ref("loanUsers/"+aadhaar.value).set({
     name: fullName.value,email: email.value,mobile: mobile.value,
