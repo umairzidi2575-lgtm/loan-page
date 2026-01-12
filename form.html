@@ -141,7 +141,7 @@ input[type=range]::-moz-range-thumb {
 <div class="row"><label>Email</label><input id="email"><div class="error" id="e2"></div></div>
 <div class="row"><label>Mobile</label><input id="mobile" maxlength="10"><div class="error" id="e3"></div></div>
 <div class="row"><label>PAN</label><input id="pan" maxlength="10"><div class="error" id="e4"></div></div>
-<div class="row"><label>Aadhaar</label><input id="aadhaar" maxlength="14"><div class="error" id="e5"></div></div>
+<div class="row"><label>Aadhaar</label><input id="aadhaar" maxlength="12"><div class="error" id="e5"></div></div>
 <button class="next" id="btnNext1">Next</button>
 </div>
 
@@ -245,24 +245,7 @@ fullName.oninput = ()=>fullName.value=fullName.value.replace(/[^A-Za-z ]/g,'').r
 email.oninput = ()=>email.value=email.value.trim();
 mobile.oninput = ()=>mobile.value=mobile.value.replace(/\D/g,'').slice(0,10);
 pan.oninput = ()=>pan.value=pan.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
-aadhaar.oninput = () => {
-  // 1️⃣ Get only digits
-  let digits = aadhaar.value.replace(/\D/g, '');
-
-  // 2️⃣ Limit to 12 digits
-  digits = digits.slice(0, 12);
-
-  // 3️⃣ Add space every 4 digits
-  let formatted = '';
-  for (let i = 0; i < digits.length; i++) {
-    if (i > 0 && i % 4 === 0) formatted += ' ';
-    formatted += digits[i];
-  }
-
-  // 4️⃣ Update input value
-  aadhaar.value = formatted;
-};
-
+aadhaar.oninput = ()=>aadhaar.value=aadhaar.value.replace(/\D/g,'').slice(0,12);
 account.oninput = ()=>account.value=account.value.replace(/\D/g,'').slice(0,18);
 
 /* IFSC fetch */
@@ -300,8 +283,8 @@ function updateTenure(){
 function updatePreview(){
   const amt=+amount.value;
   const yrs=+years.value;
-  const total = amt + (amt * 0.05 * yrs);
-  const emi = Math.ceil(total / (yrs * 12));
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
   preview.innerHTML=`Loan: ₹${amt.toLocaleString()} | Tenure: ${yrs} Years | EMI ₹${emi.toLocaleString()}`;
 }
 
@@ -344,24 +327,25 @@ amount.addEventListener("input", ()=>{
 years.addEventListener("change", ()=>updatePreview());
 
 btnNext1.addEventListener("click", () => {
+  // Clear errors
   e1.innerText = e2.innerText = e3.innerText = e4.innerText = e5.innerText = "";
 
-  // Get raw Aadhaar (digits only)
-  const rawAadhaar = aadhaar.value.replace(/\s/g, '');
-
-  // Validation
+  // Validate fields
   if (!/^[A-Za-z ]{3,}$/.test(fullName.value)) return e1.innerText = "Invalid name";
   if (!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) return e2.innerText = "Invalid email";
-  if (!/^[6-9]\d{9}$/.test(mobile.value)) return e3.innerText = "Invalid mobile";
+  if (!/^[6-9]\d{9}$/.test(mobile.value.replace(/\s/g,''))) return e3.innerText = "Invalid mobile";
   if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan.value)) return e4.innerText = "Invalid PAN";
-  if (!/^\d{12}$/.test(rawAadhaar)) return e5.innerText = "Invalid Aadhaar";
+  if (!/^\d{12}$/.test(aadhaar.value.replace(/\s/g,''))) return e5.innerText = "Invalid Aadhaar";
 
-  // Check Firebase
-  db.ref("loanUsers/" + rawAadhaar).once("value", snapshot => {
+  // Remove spaces for saving
+  const aadhaarNo = aadhaar.value.replace(/\s/g, '');
+
+  // Check if Aadhaar already exists
+  db.ref("loanUsers/" + aadhaarNo).once("value", snapshot => {
     if (snapshot.exists()) {
       e5.innerText = "Aadhaar already registered";
 
-      // Auto-fill last used info
+      // Load last used data
       const last = snapshot.val();
       fullName.value = last.name || "";
       email.value = last.email || "";
@@ -369,13 +353,13 @@ btnNext1.addEventListener("click", () => {
       pan.value = last.pan || "";
       aadhaar.value = last.aadhaar.replace(/(\d{4})(?=\d)/g, "$1 ") || "";
     } else {
-      // Save last used
-      db.ref("lastUsed/" + rawAadhaar).set({
+      // Save last used info
+      db.ref("lastUsed/" + aadhaarNo).set({
         name: fullName.value,
         email: email.value,
         mobile: mobile.value,
         pan: pan.value,
-        aadhaar: rawAadhaar,
+        aadhaar: aadhaarNo,
         timestamp: Date.now()
       });
 
@@ -420,41 +404,23 @@ btnBack3.addEventListener("click", ()=>{ step3.style.display="none"; step2.style
 
 /* SUBMIT */
 btnSubmit.addEventListener("click", ()=>{
-  const amt = +amount.value;
-  const yrs = +years.value;
+  const amt=+amount.value;
+  const yrs=+years.value;
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
 
-  // 5% per year simple interest
-  const total = amt + (amt * 0.05 * yrs);
-  const emi = Math.ceil(total / (yrs * 12));
-
-  // Save loan data
   db.ref("loanUsers/"+aadhaar.value).set({
-    name: fullName.value,
-    email: email.value,
-    mobile: mobile.value,
-    pan: pan.value,
-    aadhaar: aadhaar.value,
-    account: account.value,
-    ifsc: ifsc.value,
-    bank: bank.value,
-    loanAmount: amt,
-    tenureYears: yrs,
-    totalPayable: total,
-    monthlyEMI: emi,
+    name: fullName.value,email: email.value,mobile: mobile.value,
+    pan: pan.value,aadhaar: aadhaar.value,
+    account: account.value,ifsc: ifsc.value,bank: bank.value,
+    loanAmount: amt,tenureYears: yrs,
+    totalPayable: total,monthlyEMI: emi,
     createdAt: Date.now()
-  }).then(()=>{
-    // ✅ Save login info in localStorage
-    localStorage.setItem("loggedInUser", aadhaar.value);
-
-    msg.innerHTML="✅ Loan Submitted Successfully";
-
-    // Redirect to dashboard
-    setTimeout(()=>{
-      window.location.href="dashboard.html";
-    }, 1500);
-  }).catch(err=>{
-    msg.innerHTML="❌ Error submitting loan: "+err.message;
   });
+
+  msg.innerHTML="✅ Loan Submitted Successfully";
+
+  setTimeout(()=>{ window.location.href="dashboard.html"; }, 2000);
 });
 </script>
 
