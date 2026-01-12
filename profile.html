@@ -300,9 +300,6 @@ userRef.on("value",s=>{
   const p=Math.min(Math.floor((userData.paidAmount/userData.totalLoan)*100)||0,100);
   emiProgress.style.width=p+"%";
   progressText.innerText=p+"% Paid";
-
-  kycBadge.className="kyc-badge "+(userData.kycStatus||"pending");
-  kycBadge.innerText="KYC "+(userData.kycStatus||"Pending");
 });
 
 /* IMAGE */
@@ -314,75 +311,26 @@ imageInput.onchange=e=>{
   r.put(f).then(()=>r.getDownloadURL().then(u=>userRef.update({profileImage:u})));
 }
 
+/* PDF */
 function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p","mm","a4");
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+  pdf.text("Loan Statement",20,20);
+  pdf.text("Name: "+userData.name,20,35);
+  pdf.text("Aadhaar: "+userData.aadhaar,20,45);
+  pdf.text("Total Loan: ₹"+userData.totalLoan,20,60);
+  pdf.text("Paid: ₹"+userData.paidAmount,20,70);
+  pdf.text("Next EMI: ₹"+userData.nextEMI,20,80);
+  pdf.text("Status: "+userData.status,20,90);
+  pdf.save("Loan_Statement.pdf");
+}
 
-  let y = 20;
-
-  // Title
-  pdf.setFontSize(18);
-  pdf.text("Loan Application Statement", 105, y, { align: "center" });
-
-  y += 12;
-  pdf.setFontSize(11);
-  pdf.text("Generated on: " + new Date().toLocaleDateString(), 105, y, { align: "center" });
-
-  y += 15;
-  pdf.setLineWidth(0.5);
-  pdf.line(15, y, 195, y);
-
-  y += 10;
-  pdf.setFontSize(13);
-  pdf.text("Applicant Details", 15, y);
-
-  y += 8;
-  pdf.setFontSize(11);
-  pdf.text("Name: " + (userData.name || "-"), 15, y); y += 7;
-  pdf.text("Mobile: " + (userData.mobile || "-"), 15, y); y += 7;
-  pdf.text("Aadhaar: " + (userData.aadhaar || "-"), 15, y); y += 7;
-  pdf.text("PAN: " + (userData.pan || "-"), 15, y);
-
-  y += 12;
-  pdf.setLineWidth(0.3);
-  pdf.line(15, y, 195, y);
-
-  y += 10;
-  pdf.setFontSize(13);
-  pdf.text("Loan Details", 15, y);
-
-  y += 8;
-  pdf.setFontSize(11);
-  pdf.text("Total Loan Amount: ₹" + (userData.totalLoan || 0), 15, y); y += 7;
-  pdf.text("Paid Amount: ₹" + (userData.paidAmount || 0), 15, y); y += 7;
-
-  const remaining = (userData.totalLoan || 0) - (userData.paidAmount || 0);
-  pdf.text("Remaining Amount: ₹" + remaining, 15, y); y += 7;
-
-  pdf.text("Next EMI: ₹" + (userData.nextEMI || 0), 15, y); y += 7;
-  pdf.text("Next EMI Date: " + (userData.nextEMIDate || "-"), 15, y); y += 7;
-  pdf.text("Loan Status: " + (userData.status || "-"), 15, y); y += 7;
-  pdf.text("KYC Status: " + (userData.kycStatus || "Pending"), 15, y);
-
-  y += 15;
-  pdf.setLineWidth(0.3);
-  pdf.line(15, y, 195, y);
-
-  y += 10;
-  pdf.setFontSize(10);
-  pdf.text(
-    "This is a system generated loan application statement. No signature is required.",
-    105,
-    y,
-    { align: "center" }
-  );
-
-  // Open PDF in new tab and trigger print
-  const pdfBlob = pdf.output("bloburl");
-  const printWindow = window.open(pdfBlob);
-  printWindow.onload = () => {
-    printWindow.print();
-  };
+/* LOGOUT POPUP */
+function openLogout(){logoutPopup.style.display="flex";}
+function closeLogout(){logoutPopup.style.display="none";}
+function logout(){
+  localStorage.removeItem("loan_aadhaar");
+  location.href="index.html";
 }
 </script>
 
