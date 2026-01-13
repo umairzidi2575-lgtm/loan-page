@@ -304,6 +304,24 @@ const dlStatus = document.getElementById("dlStatus");
 
 let aadhaarVerified = false;
 
+// 👇👇 YAHI ADD KARO
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("dl") === "success") {
+  aadhaarVerified = true;
+  dlStatus.innerHTML = "✅ Aadhaar verified via DigiLocker";
+  dlStatus.style.color = "green";
+}
+
+if (params.get("dl") === "fail") {
+  aadhaarVerified = false;
+  dlStatus.innerHTML = "❌ Aadhaar verification failed";
+  dlStatus.style.color = "red";
+}
+
+// ⬇️ Iske baad tumhara existing JS code chalega
+
+
 
 const fullName = document.getElementById("fullName");
 const email = document.getElementById("email");
@@ -425,19 +443,20 @@ amount.addEventListener("input", ()=>{
   updateProgressLine();
 });
 years.addEventListener("change", ()=>updatePreview());
-btnDigi.addEventListener("click", ()=>{
+btnDigi.addEventListener("click", () => {
 
-  if(!/^\d{12}$/.test(aadhaar.value)){
+  if (!/^\d{12}$/.test(aadhaar.value)) {
     e5.innerText = "Enter valid Aadhaar before verification";
     return;
   }
 
-  dlStatus.innerHTML = "Redirecting to DigiLocker...";
+  dlStatus.innerHTML = "Verifying Aadhaar...";
   dlStatus.style.color = "#2563eb";
 
-  // ✅ ONLY THIS (backend call)
-  window.location.href =
-    "http://localhost:3000/digilocker/auth?aadhaar=" + aadhaar.value;
+  // ✅ FAKE DigiLocker success
+  setTimeout(() => {
+    window.location.href = window.location.pathname + "?dl=success";
+  }, 1200);
 });
 
 
