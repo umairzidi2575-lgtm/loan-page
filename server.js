@@ -1,22 +1,41 @@
 const express = require("express");
 const app = express();
 
+/*
+|--------------------------------------------------------------------------
+| FAKE / DEMO DigiLocker AUTH ROUTE
+|--------------------------------------------------------------------------
+| Real DigiLocker tabhi kaam karta hai jab
+| govt-approved client_id + whitelisted domain ho
+| Isliye yaha DEMO success redirect kar rahe hain
+*/
+
 app.get("/digilocker/auth", (req, res) => {
-
-  const authUrl =
-    "https://digilocker.gov.in/public/oauth2/1/authorize" +
-    "?response_type=code" +
-    "&client_id=YOUR_CLIENT_ID" +
-    "&redirect_uri=https://your-backend.com/digilocker/callback" +
-    "&scope=openid profile" +
-    "&state=xyz123";
-
-  res.redirect(authUrl);
+  // yaha normally DigiLocker redirect hota
+  // abhi DEMO ke liye direct success
+  res.redirect(
+    "https://YOUR-GITHUB-PAGE/index.html?dl=success"
+  );
 });
 
+/*
+|--------------------------------------------------------------------------
+| DigiLocker CALLBACK (OPTIONAL)
+|--------------------------------------------------------------------------
+*/
+app.get("/digilocker/callback", (req, res) => {
+  // Normally yaha code verify hota
+  res.redirect(
+    "https://YOUR-GITHUB-PAGE/index.html?dl=success"
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
+| SERVER START
+|--------------------------------------------------------------------------
+*/
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("✅ Server running on port", PORT);
 });
-
-
