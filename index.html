@@ -326,51 +326,24 @@ amount.addEventListener("input", ()=>{
 });
 years.addEventListener("change", ()=>updatePreview());
 
-btnNext1.addEventListener("click", () => {
-  // Clear errors
-  e1.innerText = e2.innerText = e3.innerText = e4.innerText = e5.innerText = "";
+/* STEP 1 NEXT */
+btnNext1.addEventListener("click", ()=>{
+  e1.innerText=e2.innerText=e3.innerText=e4.innerText=e5.innerText="";
+  if(!/^[A-Za-z ]{3,}$/.test(fullName.value)) return e1.innerText="Invalid name";
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) return e2.innerText="Invalid email";
+  if(!/^[6-9]\d{9}$/.test(mobile.value)) return e3.innerText="Invalid mobile";
+  if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan.value)) return e4.innerText="Invalid PAN";
+  if(!/^\d{12}$/.test(aadhaar.value)) return e5.innerText="Invalid Aadhaar";
 
-  // Validate fields
-  if (!/^[A-Za-z ]{3,}$/.test(fullName.value)) return e1.innerText = "Invalid name";
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) return e2.innerText = "Invalid email";
-  if (!/^[6-9]\d{9}$/.test(mobile.value.replace(/\s/g,''))) return e3.innerText = "Invalid mobile";
-  if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan.value)) return e4.innerText = "Invalid PAN";
-  if (!/^\d{12}$/.test(aadhaar.value.replace(/\s/g,''))) return e5.innerText = "Invalid Aadhaar";
-
-  // Remove spaces for saving
-  const aadhaarNo = aadhaar.value.replace(/\s/g, '');
-
-  // Check if Aadhaar already exists
-  db.ref("loanUsers/" + aadhaarNo).once("value", snapshot => {
-    if (snapshot.exists()) {
-      e5.innerText = "Aadhaar already registered";
-
-      // Load last used data
-      const last = snapshot.val();
-      fullName.value = last.name || "";
-      email.value = last.email || "";
-      mobile.value = last.mobile || "";
-      pan.value = last.pan || "";
-      aadhaar.value = last.aadhaar.replace(/(\d{4})(?=\d)/g, "$1 ") || "";
-    } else {
-      // Save last used info
-      db.ref("lastUsed/" + aadhaarNo).set({
-        name: fullName.value,
-        email: email.value,
-        mobile: mobile.value,
-        pan: pan.value,
-        aadhaar: aadhaarNo,
-        timestamp: Date.now()
-      });
-
-      // Move to Step 2
-      step1.style.display = "none";
-      step2.style.display = "block";
+  db.ref("loanUsers/"+aadhaar.value).once("value", snapshot=>{
+    if(snapshot.exists()) e5.innerText="Aadhaar already registered";
+    else {
+      step1.style.display="none";
+      step2.style.display="block";
       updateProgressLine();
     }
   });
 });
-
 /* STEP 2 NEXT */
 btnNext2.addEventListener("click", ()=>{
   e6.innerText=e7.innerText="";
@@ -402,38 +375,25 @@ btnNext2.addEventListener("click", ()=>{
 btnBack2.addEventListener("click", ()=>{ step2.style.display="none"; step1.style.display="block"; updateProgressLine(); });
 btnBack3.addEventListener("click", ()=>{ step3.style.display="none"; step2.style.display="block"; updateProgressLine(); });
 
+/* SUBMIT */
 btnSubmit.addEventListener("click", ()=>{
-  const amt = +amount.value;
-  const yrs = +years.value;
-  const total = amt + (amt * 0.05 * yrs);
-  const emi = Math.ceil(total / (yrs * 12));
+  const amt=+amount.value;
+  const yrs=+years.value;
+  const total=amt+(amt*0.05*yrs);
+  const emi=Math.ceil(total/(yrs*12));
 
-  const aadhaarNo = aadhaar.value.replace(/\s/g,''); // ✅ IMPORTANT
-
-  db.ref("loanUsers/" + aadhaarNo).set({
-    name: fullName.value,
-    email: email.value,
-    mobile: mobile.value,
-    pan: pan.value,
-    aadhaar: aadhaarNo,
-    account: account.value,
-    ifsc: ifsc.value,
-    bank: bank.value,
-    loanAmount: amt,
-    tenureYears: yrs,
-    totalPayable: total,
-    monthlyEMI: emi,
+  db.ref("loanUsers/"+aadhaar.value).set({
+    name: fullName.value,email: email.value,mobile: mobile.value,
+    pan: pan.value,aadhaar: aadhaar.value,
+    account: account.value,ifsc: ifsc.value,bank: bank.value,
+    loanAmount: amt,tenureYears: yrs,
+    totalPayable: total,monthlyEMI: emi,
     createdAt: Date.now()
-  })
-  .then(()=>{
-    msg.innerHTML = "✅ Loan Submitted Successfully";
-    setTimeout(()=>{
-      window.location.href = "dashboard.html";
-    }, 1500);
-  })
-  .catch(err=>{
-    msg.innerHTML = "❌ Error: " + err.message;
   });
+
+  msg.innerHTML="✅ Loan Submitted Successfully";
+
+  setTimeout(()=>{ window.location.href="dashboard.html"; }, 2000);
 });
 </script>
 
