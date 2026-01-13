@@ -25,6 +25,7 @@ button{padding:12px;border-radius:8px;border:0;font-weight:700;cursor:pointer;ma
 button.next{background:var(--accent);color:#fff;}
 button.back{background:#ddd;color:#000;}
 
+
 /* STEP CIRCLES + PROGRESS LINE */
 .steps {
   display: flex;
@@ -114,6 +115,51 @@ input[type=range]::-moz-range-thumb {
   background: var(--accent);
   cursor: pointer;
 }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.brand img{
+  width:46px;
+  height:46px;
+}
+.brand h1{
+  font-size:20px;
+  margin:0;
+  color:#111827;
+}
+.brand p{
+  margin:0;
+  font-size:13px;
+  color:#6b7280;
+}
+
+.input-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:0 12px;
+  background:#f9fafb;
+}
+.input-wrap span{
+  font-size:18px;
+}
+.input-wrap input{
+  border:0;
+  outline:none;
+  background:transparent;
+  padding:12px 0;
+  width:100%;
+  font-size:14px;
+}
+.input-wrap:focus-within{
+  border-color:var(--accent);
+  background:#fff;
+}
 
 /* ERROR */
 .error{color:var(--danger);font-size:13px;margin-top:2px;}
@@ -137,13 +183,62 @@ input[type=range]::-moz-range-thumb {
 
 <!-- STEP 1 -->
 <div id="step1">
-<div class="row"><label>Name</label><input id="fullName"><div class="error" id="e1"></div></div>
-<div class="row"><label>Email</label><input id="email"><div class="error" id="e2"></div></div>
-<div class="row"><label>Mobile</label><input id="mobile" maxlength="10"><div class="error" id="e3"></div></div>
-<div class="row"><label>PAN</label><input id="pan" maxlength="10"><div class="error" id="e4"></div></div>
-<div class="row"><label>Aadhaar</label><input id="aadhaar" maxlength="12"><div class="error" id="e5"></div></div>
-<button class="next" id="btnNext1">Next</button>
+
+<div class="row">
+  <label>Full Name</label>
+  <div class="input-wrap">
+    <span>👤</span>
+    <input id="fullName" placeholder="Enter your full name">
+  </div>
+  <div class="error" id="e1"></div>
 </div>
+
+<div class="row">
+  <label>Email Address</label>
+  <div class="input-wrap">
+    <span>📧</span>
+    <input id="email" placeholder="example@email.com">
+  </div>
+  <div class="error" id="e2"></div>
+</div>
+
+<div class="row">
+  <label>Mobile Number</label>
+  <div class="input-wrap">
+    <span>📱</span>
+    <input id="mobile" placeholder="10 digit mobile number" maxlength="10">
+  </div>
+  <div class="error" id="e3"></div>
+</div>
+
+<div class="row">
+  <label>PAN Number</label>
+  <div class="input-wrap">
+    <span>🆔</span>
+    <input id="pan" placeholder="ABCDE1234F" maxlength="10">
+  </div>
+  <div class="error" id="e4"></div>
+</div>
+
+<div class="row">
+  <label>Aadhaar Number</label>
+  <div class="input-wrap">
+    <span>🇮🇳</span>
+    <input id="aadhaar" placeholder="12 digit Aadhaar number" maxlength="12">
+  </div>
+  <div class="row">
+  <button type="button" id="btnDigi" class="next" style="background:#0f172a">
+    🔐 Verify Aadhaar via DigiLocker
+  </button>
+  <div id="dlStatus" style="font-size:13px;font-weight:700;margin-top:6px"></div>
+</div>
+
+  <div class="error" id="e5"></div>
+</div>
+
+<button class="next" id="btnNext1">Continue</button>
+</div>
+
 
 <!-- STEP 2 -->
 <div id="step2" style="display:none">
@@ -188,7 +283,6 @@ input[type=range]::-moz-range-thumb {
 </div>
 
 </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -205,6 +299,29 @@ const db = firebase.database();
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
 const step3 = document.getElementById("step3");
+const btnDigi = document.getElementById("btnDigi");
+const dlStatus = document.getElementById("dlStatus");
+
+let aadhaarVerified = false;
+
+// 👇👇 YAHI ADD KARO
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("dl") === "success") {
+  aadhaarVerified = true;
+  dlStatus.innerHTML = "✅ Aadhaar verified via DigiLocker";
+  dlStatus.style.color = "green";
+}
+
+if (params.get("dl") === "fail") {
+  aadhaarVerified = false;
+  dlStatus.innerHTML = "❌ Aadhaar verification failed";
+  dlStatus.style.color = "red";
+}
+
+// ⬇️ Iske baad tumhara existing JS code chalega
+
+
 
 const fullName = document.getElementById("fullName");
 const email = document.getElementById("email");
@@ -241,6 +358,7 @@ const e6 = document.getElementById("e6");
 const e7 = document.getElementById("e7");
 
 /* AUTO FORMAT */
+
 fullName.oninput = ()=>fullName.value=fullName.value.replace(/[^A-Za-z ]/g,'').replace(/\b\w/g,c=>c.toUpperCase());
 email.oninput = ()=>email.value=email.value.trim();
 mobile.oninput = ()=>mobile.value=mobile.value.replace(/\D/g,'').slice(0,10);
@@ -325,10 +443,30 @@ amount.addEventListener("input", ()=>{
   updateProgressLine();
 });
 years.addEventListener("change", ()=>updatePreview());
+btnDigi.addEventListener("click", ()=>{
+
+  if(!/^\d{12}$/.test(aadhaar.value)){
+    e5.innerText = "Enter valid Aadhaar before verification";
+    return;
+  }
+
+  dlStatus.innerHTML = "Redirecting to DigiLocker...";
+  dlStatus.style.color = "#2563eb";
+
+  // ✅ ONLY THIS (backend call)
+  window.location.href =
+  "https://loan-backend.onrender.com/digilocker/auth";
+});
+
 
 /* STEP 1 NEXT */
 btnNext1.addEventListener("click", ()=>{
   e1.innerText=e2.innerText=e3.innerText=e4.innerText=e5.innerText="";
+  if(!aadhaarVerified){
+  e5.innerText = "Please verify Aadhaar via DigiLocker";
+  return;
+}
+
   if(!/^[A-Za-z ]{3,}$/.test(fullName.value)) return e1.innerText="Invalid name";
   if(!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)) return e2.innerText="Invalid email";
   if(!/^[6-9]\d{9}$/.test(mobile.value)) return e3.innerText="Invalid mobile";
@@ -383,13 +521,22 @@ btnSubmit.addEventListener("click", ()=>{
   const emi=Math.ceil(total/(yrs*12));
 
   db.ref("loanUsers/"+aadhaar.value).set({
-    name: fullName.value,email: email.value,mobile: mobile.value,
-    pan: pan.value,aadhaar: aadhaar.value,
-    account: account.value,ifsc: ifsc.value,bank: bank.value,
-    loanAmount: amt,tenureYears: yrs,
-    totalPayable: total,monthlyEMI: emi,
-    createdAt: Date.now()
-  });
+  name: fullName.value,
+  email: email.value,
+  mobile: mobile.value,
+  pan: pan.value,
+  aadhaar: aadhaar.value,
+  aadhaarVerified: true,
+  kycSource: "DigiLocker",
+  account: account.value,
+  ifsc: ifsc.value,
+  bank: bank.value,
+  loanAmount: amt,
+  tenureYears: yrs,
+  totalPayable: total,
+  monthlyEMI: emi,
+  createdAt: Date.now()
+});
 
   msg.innerHTML="✅ Loan Submitted Successfully";
 
