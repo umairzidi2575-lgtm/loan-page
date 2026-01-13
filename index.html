@@ -402,26 +402,38 @@ btnNext2.addEventListener("click", ()=>{
 btnBack2.addEventListener("click", ()=>{ step2.style.display="none"; step1.style.display="block"; updateProgressLine(); });
 btnBack3.addEventListener("click", ()=>{ step3.style.display="none"; step2.style.display="block"; updateProgressLine(); });
 
-/* SUBMIT */
 btnSubmit.addEventListener("click", ()=>{
-  const amt=+amount.value;
-  const yrs=+years.value;
-  const total=amt+(amt*0.05*yrs);
-  const emi=Math.ceil(total/(yrs*12));
-  const aadhaarNo = aadhaar.value.replace(/\s/g,'');
+  const amt = +amount.value;
+  const yrs = +years.value;
+  const total = amt + (amt * 0.05 * yrs);
+  const emi = Math.ceil(total / (yrs * 12));
 
-  db.ref("loanUsers/"+aadhaar.value).set({
-    name: fullName.value,email: email.value,mobile: mobile.value,
-    pan: pan.value,aadhaar: aadhaar.value,
-    account: account.value,ifsc: ifsc.value,bank: bank.value,
-    loanAmount: amt,tenureYears: yrs,
-    totalPayable: total,monthlyEMI: emi,
+  const aadhaarNo = aadhaar.value.replace(/\s/g,''); // ✅ IMPORTANT
+
+  db.ref("loanUsers/" + aadhaarNo).set({
+    name: fullName.value,
+    email: email.value,
+    mobile: mobile.value,
+    pan: pan.value,
+    aadhaar: aadhaarNo,
+    account: account.value,
+    ifsc: ifsc.value,
+    bank: bank.value,
+    loanAmount: amt,
+    tenureYears: yrs,
+    totalPayable: total,
+    monthlyEMI: emi,
     createdAt: Date.now()
+  })
+  .then(()=>{
+    msg.innerHTML = "✅ Loan Submitted Successfully";
+    setTimeout(()=>{
+      window.location.href = "dashboard.html";
+    }, 1500);
+  })
+  .catch(err=>{
+    msg.innerHTML = "❌ Error: " + err.message;
   });
-
-  msg.innerHTML="✅ Loan Submitted Successfully";
-
-  setTimeout(()=>{ window.location.href="dashboard.html"; }, 2000);
 });
 </script>
 
