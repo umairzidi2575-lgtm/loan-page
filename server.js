@@ -14,7 +14,7 @@ app.get("/digilocker/auth", (req, res) => {
   // yaha normally DigiLocker redirect hota
   // abhi DEMO ke liye direct success
   res.redirect(
-    "https://YOUR-GITHUB-PAGE/index.html?dl=success"
+    "https://umairzidi2575-lgtm.github.io/loan-page/"
   );
 });
 
@@ -26,7 +26,7 @@ app.get("/digilocker/auth", (req, res) => {
 app.get("/digilocker/callback", (req, res) => {
   // Normally yaha code verify hota
   res.redirect(
-    "https://YOUR-GITHUB-PAGE/index.html?dl=success"
+    "https://umairzidi2575-lgtm.github.io/loan-page/"
   );
 });
 
@@ -39,3 +39,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("✅ Server running on port", PORT);
 });
+
