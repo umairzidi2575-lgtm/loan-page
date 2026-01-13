@@ -437,7 +437,7 @@ btnDigi.addEventListener("click", ()=>{
 
   // ✅ ONLY THIS (backend call)
   window.location.href =
-    "https://digilocker.gov.in/public/oauth2/1/authorize" + aadhaar.value;
+    "http://localhost:3000/digilocker/auth?aadhaar=" + aadhaar.value;
 });
 
 
