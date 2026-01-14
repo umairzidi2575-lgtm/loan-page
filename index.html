@@ -212,22 +212,14 @@ input[type=range]::-moz-range-thumb {
   </div>
 
   <div class="row">
-    <label>PAN Number</label>
-    <div class="input-wrap">
-      <span>🆔</span>
-      <input id="pan" maxlength="10">
-    </div>
-    <div class="error" id="e4"></div>
+  <label>Address</label>
+  <div class="input-wrap">
+    <span>🏠</span>
+    <input id="address" placeholder="Enter your full address">
   </div>
+  <div class="error" id="e4"></div>
+</div>
 
-  <div class="row">
-    <label>Aadhaar Number</label>
-    <div class="input-wrap">
-      <span>🇮🇳</span>
-      <input id="aadhaar" maxlength="12">
-    </div>
-    <div class="error" id="e5"></div>
-  </div>
 
   <!-- ✅ NEXT BUTTON STEP-1 KE ANDAR -->
   <button class="next" id="btnNext1">Next</button>
@@ -235,23 +227,19 @@ input[type=range]::-moz-range-thumb {
 </div>
 <!-- STEP 2 -->
 <div id="step2" style="display:none">
-  <div class="row">
-    <label>Account Number</label>
-    <input id="account"><div class="error" id="e7"></div>
-  </div>
-  <div class="row">
-    <label>IFSC Code</label>
-    <input id="ifsc" maxlength="11"><div class="error" id="e6"></div>
-  </div>
-  <div class="row">
-    <label>Bank Name</label>
-    <input id="bank" readonly>
-  </div>
 
   <div class="row">
-  <label>Loan Amount (₹50,000 – ₹10,00,000)</label>
-  <input type="range" id="amount" min="50000" max="1000000" step="5000" value="50000">
-  <b id="amountLabel">₹50,000</b>
+    <label>Loan Amount (₹50,000 – ₹10,00,000)</label>
+    <input type="range" id="amount" min="50000" max="1000000" step="5000" value="50000">
+    <b id="amountLabel">₹50,000</b>
+  </div>
+  <div class="row">
+  <label>Aadhaar Number</label>
+  <div class="input-wrap">
+    <span>🪪</span>
+    <input id="aadhaar" placeholder="Enter 12 digit Aadhaar" maxlength="12">
+  </div>
+  <div class="error" id="e5"></div>
 </div>
 
 
@@ -264,7 +252,9 @@ input[type=range]::-moz-range-thumb {
 
   <button class="next" id="btnNext2">Next</button>
   <button class="back" id="btnBack2">Back</button>
+
 </div>
+
 
 <!-- STEP 3 -->
  
@@ -296,17 +286,17 @@ const db = firebase.database();
 const fullName = document.getElementById("fullName");
 const email = document.getElementById("email");
 const mobile = document.getElementById("mobile");
-const pan = document.getElementById("pan");
-const aadhaar = document.getElementById("aadhaar");
-const ifsc = document.getElementById("ifsc");
-const bank = document.getElementById("bank");
-const account = document.getElementById("account");
 const amount = document.getElementById("amount");
 const amountLabel = document.getElementById("amountLabel");
 const years = document.getElementById("years");
 const preview = document.getElementById("preview");
 const review = document.getElementById("review");
 const msg = document.getElementById("msg");
+const address = document.getElementById("address");
+const aadhaar = document.getElementById("aadhaar");
+const e5 = document.getElementById("e5");
+const e4 = document.getElementById("e4");
+
 
 const btnNext1 = document.getElementById("btnNext1");
 const btnNext2 = document.getElementById("btnNext2");
@@ -322,33 +312,13 @@ const progressLine = document.getElementById("progressLine");
 const e1 = document.getElementById("e1");
 const e2 = document.getElementById("e2");
 const e3 = document.getElementById("e3");
-const e4 = document.getElementById("e4");
-const e5 = document.getElementById("e5");
-const e6 = document.getElementById("e6");
-const e7 = document.getElementById("e7");
 
 /* AUTO FORMAT */
 
 fullName.oninput = ()=>fullName.value=fullName.value.replace(/[^A-Za-z ]/g,'').replace(/\b\w/g,c=>c.toUpperCase());
 email.oninput = ()=>email.value=email.value.trim();
 mobile.oninput = ()=>mobile.value=mobile.value.replace(/\D/g,'').slice(0,10);
-pan.oninput = ()=>pan.value=pan.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
-aadhaar.oninput = ()=>aadhaar.value=aadhaar.value.replace(/\D/g,'').slice(0,12);
-account.oninput = ()=>account.value=account.value.replace(/\D/g,'').slice(0,18);
 
-/* IFSC fetch */
-ifsc.oninput = ()=> {
-  const val = ifsc.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,11);
-  ifsc.value = val;
-  if(val.length===11){
-    fetch(`https://ifsc.razorpay.com/${val}`)
-    .then(r=>r.json())
-    .then(d=>bank.value=d.BANK||"")
-    .catch(()=>bank.value="");
-  } else {
-    bank.value="";
-  }
-};
 
 /* TENURE LOGIC */
 function updateTenure(){
@@ -389,7 +359,7 @@ function updateProgressLine(){
   let percent = 0;
   if(step1.style.display==="block") percent = 0;
   else if(step2.style.display==="block"){
-    const min = 50000, max = 500000;
+    const min = 50000, max = 1000000;
     const val = +amount.value;
     percent = 25 + ((val - min)/(max-min))*50;
   } else if(step3.style.display==="block") percent = 100;
@@ -419,64 +389,49 @@ years.addEventListener("change", ()=>updatePreview());
 /* STEP 1 NEXT */
 btnNext1.addEventListener("click", ()=>{
 
-  e1.innerText = e2.innerText = e3.innerText = e4.innerText = e5.innerText = "";
+  e1.innerText = e2.innerText = e3.innerText = e4.innerText = "";
 
-  if(!/^[A-Za-z ]{3,}$/.test(fullName.value)){
-    e1.innerText = "Invalid name";
-    return;
-  }
+if(!/^[A-Za-z ]{3,}$/.test(fullName.value)){
+  e1.innerText = "Invalid name";
+  return;
+}
+if(!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)){
+  e2.innerText = "Invalid email";
+  return;
+}
+if(!/^[6-9]\d{9}$/.test(mobile.value)){
+  e3.innerText = "Invalid mobile";
+  return;
+}
+if(address.value.trim().length < 5){
+  e4.innerText = "Please enter valid address";
+  return;
+}
 
-  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email.value)){
-    e2.innerText = "Invalid email";
-    return;
-  }
-
-  if(!/^[6-9]\d{9}$/.test(mobile.value)){
-    e3.innerText = "Invalid mobile";
-    return;
-  }
-
-  if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan.value)){
-    e4.innerText = "Invalid PAN";
-    return;
-  }
-
-  if(!/^\d{12}$/.test(aadhaar.value)){
-    e5.innerText = "Invalid Aadhaar";
-    return;
-  }
-
-  // Aadhaar duplicate check
-  db.ref("loanUsers/" + aadhaar.value).once("value", snapshot=>{
-    if(snapshot.exists()){
-      e5.innerText = "Aadhaar already registered";
-    } else {
-      step1.style.display = "none";
-      step2.style.display = "block";
-      updateProgressLine();
-    }
-  });
-
+  // ✅ MOVE TO STEP 2
+  step1.style.display = "none";
+  step2.style.display = "block";
+  updateProgressLine();
 });
+//step 2
 btnNext2.addEventListener("click", ()=>{
+  aadhaar.oninput = () => {
+  aadhaar.value = aadhaar.value.replace(/\D/g,'').slice(0,12);
+};
+  
+e5.innerText = "";
 
-  e6.innerText = "";
-  e7.innerText = "";
-
-  if(!/^\d{9,18}$/.test(account.value)){
-    e7.innerText = "Invalid account number";
-    return;
-  }
-
-  if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.value)){
-    e6.innerText = "Invalid IFSC code";
-    return;
-  }
+if(!/^\d{12}$/.test(aadhaar.value)){
+  e5.innerText = "Invalid Aadhaar number";
+  return;
+}
 
   // STEP 2 → STEP 3
-  step2.style.display = "none";
-  step3.style.display = "block";
-  updateProgressLine();
+step2.style.display = "none";
+step3.style.display = "block";
+updateProgressLine();
+
+
 
   // REVIEW DATA
   const amt = +amount.value;
@@ -485,15 +440,14 @@ btnNext2.addEventListener("click", ()=>{
   const emi = Math.ceil(total / (yrs * 12));
 
   review.innerHTML = `
-    <b>Name:</b> ${fullName.value}<br>
-    <b>Mobile:</b> ${mobile.value}<br>
-    <b>Account:</b> ${account.value}<br>
-    <b>IFSC:</b> ${ifsc.value}<br>
-    <b>Bank:</b> ${bank.value}<br><br>
-    <b>Loan Amount:</b> ₹${amt.toLocaleString()}<br>
-    <b>Tenure:</b> ${yrs} Years<br>
-    <b>EMI:</b> ₹${emi.toLocaleString()}
-  `;
+<b>Name:</b> ${fullName.value}<br>
+<b>Mobile:</b> ${mobile.value}<br>
+<b>Address:</b> ${address.value}<br>
+<b>Aadhaar:</b> ${aadhaar.value}<br><br>
+<b>Loan Amount:</b> ₹${amt.toLocaleString()}<br>
+<b>Tenure:</b> ${yrs} Years<br>
+<b>EMI:</b> ₹${emi.toLocaleString()}
+`;
 });
 
 /* BACK BUTTONS */
@@ -502,33 +456,34 @@ btnBack3.addEventListener("click", ()=>{ step3.style.display="none"; step2.style
 
 /* SUBMIT */
 btnSubmit.addEventListener("click", ()=>{
-  const amt=+amount.value;
-  const yrs=+years.value;
-  const total=amt+(amt*0.05*yrs);
-  const emi=Math.ceil(total/(yrs*12));
 
-  db.ref("loanUsers/"+aadhaar.value).set({
-  name: fullName.value,
-  email: email.value,
-  mobile: mobile.value,
-  pan: pan.value,
-  aadhaar: aadhaar.value,
-  aadhaarVerified: true,
-  kycSource: "DigiLocker",
-  account: account.value,
-  ifsc: ifsc.value,
-  bank: bank.value,
-  loanAmount: amt,
-  tenureYears: yrs,
-  totalPayable: total,
-  monthlyEMI: emi,
-  createdAt: Date.now()
+  const loan = +amount.value;
+  const year = +years.value;
+  const total = loan + (loan * 0.05 * year);
+  const emi = Math.ceil(total / (year * 12));
+
+  const key = aadhaar.value; // ✅ Aadhaar as KEY
+
+  localStorage.setItem("loan_aadhaar", key);
+
+  db.ref("loanUsers/" + key).set({
+    name: fullName.value,
+    email: email.value,
+    mobile: mobile.value,
+    address: address.value,
+    aadhaar: key,
+    loanAmount: loan,
+    tenureYears: year,
+    totalPayable: total,
+    monthlyEMI: emi,
+    status: "Pending",
+    createdAt: Date.now()
+  });
+
+  msg.innerHTML = "✅ Loan Submitted Successfully";
+  setTimeout(()=>location.href="dashboard.html",1500);
 });
 
-  msg.innerHTML="✅ Loan Submitted Successfully";
-
-  setTimeout(()=>{ window.location.href="dashboard.html"; }, 2000);
-});
 </script>
 
 </body>
