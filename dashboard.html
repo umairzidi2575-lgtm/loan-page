@@ -296,7 +296,7 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:50px;       /* icon size bada kiya */
+  font-size:25px;       /* icon size bada kiya */
   color:#2563eb;
   box-shadow:0 4px 10px rgba(0,0,0,0.1);
   transition:0.3s;
@@ -447,15 +447,13 @@ body{
 </div>
 
 <!-- ===== LOAN STATUS TIMELINE ===== -->
-<div class="card">
-  <h3>Loan Status</h3>
-  <div class="timeline" id="loanTimeline">
-    <div class="timeline-item pending"><span>✔</span><p>Application Submitted</p></div>
-    <div class="timeline-item pending"><span>✔</span><p>KYC Verified</p></div>
-    <div class="timeline-item pending"><span>✔</span><p>Loan Approved</p></div>
-    <div class="timeline-item pending"><span>⏳</span><p>Disbursement Pending</p></div>
-  </div>
+<div class="timeline" id="loanTimeline">
+  <div class="timeline-item pending"><span></span><p>Application Submitted</p></div>
+  <div class="timeline-item pending"><span></span><p>KYC Verified</p></div>
+  <div class="timeline-item pending"><span></span><p>Loan Approved</p></div>
+  <div class="timeline-item pending"><span></span><p>Disbursement Pending</p></div>
 </div>
+
 
 <!-- 🔥 MOBILE BOTTOM NAV -->
 <div class="bottom-nav">
@@ -606,7 +604,7 @@ function updatePaymentCard(u) {
 
   if(!nextChargeFound){
     // All charges PAID
-    messageDiv.innerText = "✅ your utr tranzaction id has been under verification process please wait.";
+    messageDiv.innerText = "⏳please wait your tranzaction id has been under verification process.";
     utrWrapper.style.display = "none";
     payBtn.disabled = true;
     paymentCard.style.display = "flex";
